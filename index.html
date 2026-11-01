@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>HashDash 3D</title>
-<meta name="description" content="A first-person voxel puzzle game that teaches CBSE Grade 11 (Code 083) Python dictionaries.">
+<meta name="description" content="A first-person voxel puzzle game that teaches CBSE Class XI (Code 083) Python dictionaries.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --cyan:#19e6f2; --cyan-dim:#0b7f8a; --cyan-faint:rgba(25,230,242,.14);
+  --cyan:#19e6f2; --cyan-faint:rgba(25,230,242,.14);
   --mag:#ff2fb8; --mag-soft:#ff7be3;
   --panel:rgba(2,12,16,.82); --text:#d9fbff; --muted:#7fb3ba;
   --ok:#3dffa8; --err:#ff5470; --warn:#ffd166;
@@ -21,70 +21,73 @@ html,body{margin:0;height:100%;background:#000;color:var(--text);font-family:'Je
 button{font-family:inherit;cursor:pointer}
 .hidden{display:none!important}
 
-/* ---------- top bar ---------- */
+/* ================= HUD ================= */
 #topbar{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:18px 28px;pointer-events:none;z-index:5;background:linear-gradient(#000c,#0000)}
 .brand{display:flex;align-items:center;gap:14px}
 .brand svg{width:46px;height:46px;filter:drop-shadow(0 0 6px var(--cyan))}
 .brand .name{font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:600;letter-spacing:1px;border-left:1px solid #fff3;padding-left:14px;color:#eaffff}
 .brand .name b{color:var(--cyan);font-weight:700;text-shadow:0 0 12px var(--cyan)}
-.stats{display:flex;gap:0;font-size:14px;letter-spacing:1px}
+.stats{display:flex;font-size:14px;letter-spacing:1px}
 .stats span{border-left:2px solid #fffa;padding:2px 18px;white-space:nowrap}
-
-/* ---------- objective + toast ---------- */
-#objective{position:fixed;top:78px;left:50%;transform:translateX(-50%);font-size:13px;color:var(--muted);background:#000a;border:1px solid var(--cyan-faint);padding:6px 14px;border-radius:6px;z-index:5;pointer-events:none;max-width:min(640px,90vw);text-align:center}
+#objective{position:fixed;top:78px;left:50%;transform:translateX(-50%);font-size:13px;color:var(--muted);background:#000a;border:1px solid var(--cyan-faint);padding:6px 14px;border-radius:6px;z-index:5;pointer-events:none;max-width:min(680px,90vw);text-align:center}
 #objective b{color:var(--cyan)}
 #toast{position:fixed;top:118px;left:50%;transform:translateX(-50%);font-size:13px;padding:8px 16px;border-radius:6px;background:#0a0410ee;border:1px solid var(--mag);color:#ffd9f4;z-index:6;pointer-events:none;opacity:0;transition:opacity .25s;max-width:min(640px,90vw);text-align:center}
 #toast.show{opacity:1}
 #toast.ok{border-color:var(--ok);color:#d6ffe9}
 
-/* ---------- scanner probe ---------- */
-#probe{position:fixed;left:34px;top:120px;width:360px;max-width:calc(100vw - 32px);z-index:5;pointer-events:none;
-  background:var(--panel);border:2px solid var(--cyan);border-radius:12px;padding:14px 18px 12px;
-  box-shadow:0 0 22px #19e6f255, inset 0 0 18px #19e6f222;transform:perspective(900px) rotateY(9deg);transform-origin:left center}
+#probe{position:fixed;left:34px;top:120px;width:360px;max-width:calc(100vw - 32px);z-index:5;pointer-events:none;background:var(--panel);border:2px solid var(--cyan);border-radius:12px;padding:14px 18px 12px;box-shadow:0 0 22px #19e6f255, inset 0 0 18px #19e6f222;transform:perspective(900px) rotateY(9deg);transform-origin:left center}
 #probe:before{content:"";position:absolute;left:-8px;top:30px;bottom:30px;width:4px;background:var(--cyan);border-radius:2px;box-shadow:0 0 10px var(--cyan)}
 .probe-title{font-size:11px;letter-spacing:3px;color:var(--cyan);margin-bottom:8px;display:flex;justify-content:space-between}
 #probeCode{margin:0;font-size:15px;line-height:1.65;white-space:pre;overflow:hidden}
 #probeCode .ln{display:block;padding:0 6px;border-radius:3px}
 #probeCode .hl{background:#19e6f255;box-shadow:0 0 12px #19e6f244}
-#probeCode .k{color:#eaffff}
-#probeCode .v{color:#c7f6ff}
-#probeCode .vm{color:var(--mag-soft)}
+#probeCode .k{color:#eaffff}#probeCode .v{color:#c7f6ff}#probeCode .vm{color:var(--mag-soft)}
 #probeCode .gone{color:#5d7378;font-style:italic}
 .probe-meta{margin-top:8px;font-size:12px;color:var(--muted);border-top:1px dashed #19e6f244;padding-top:8px}
 .probe-meta b{color:var(--cyan)}
 
-/* ---------- reticle & hover tag ---------- */
-#reticle{position:fixed;left:50%;top:50%;width:38px;height:38px;margin:-19px 0 0 -19px;border:2px solid #fff;border-radius:50%;z-index:4;pointer-events:none;box-shadow:0 0 8px #000}
+#reticle{position:fixed;left:50%;top:50%;width:38px;height:38px;margin:-19px 0 0 -19px;border:2px solid #fff;border-radius:50%;z-index:4;pointer-events:none;box-shadow:0 0 8px #000;transition:transform .15s}
 #reticle:before{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px;background:#fff;border-radius:50%}
-#reticle:after{content:"";position:absolute;inset:-9px;background:
-  linear-gradient(#fff,#fff) center top/2px 8px no-repeat,linear-gradient(#fff,#fff) center bottom/2px 8px no-repeat,
-  linear-gradient(#fff,#fff) left center/8px 2px no-repeat,linear-gradient(#fff,#fff) right center/8px 2px no-repeat}
-#reticle.node{border-color:var(--mag);box-shadow:0 0 14px var(--mag)}
+#reticle:after{content:"";position:absolute;inset:-9px;background:linear-gradient(#fff,#fff) center top/2px 8px no-repeat,linear-gradient(#fff,#fff) center bottom/2px 8px no-repeat,linear-gradient(#fff,#fff) left center/8px 2px no-repeat,linear-gradient(#fff,#fff) right center/8px 2px no-repeat}
+#reticle.node{border-color:var(--mag);box-shadow:0 0 14px var(--mag);transform:scale(1.15)}
 #reticle.far{opacity:.55}
-#hoverTag{position:fixed;left:calc(50% + 120px);top:calc(50% - 115px);z-index:4;pointer-events:none;font-size:14px;
-  background:#0b0010e6;border:2px solid var(--mag);border-radius:6px;padding:8px 14px;white-space:nowrap;box-shadow:0 0 16px #ff2fb866}
+#hoverTag{position:fixed;left:calc(50% + 120px);top:calc(50% - 115px);z-index:4;pointer-events:none;font-size:14px;background:#0b0010e6;border:2px solid var(--mag);border-radius:6px;padding:8px 14px;white-space:nowrap;box-shadow:0 0 16px #ff2fb866}
 #hoverTag:before{content:"";position:absolute;left:-58px;top:100%;width:70px;height:2px;background:#fff;transform:rotate(-40deg);transform-origin:right center}
 #hoverTag .s{color:var(--mag-soft)}
 #hoverTag.wall{border-color:var(--cyan);box-shadow:0 0 16px #19e6f255}
 #hoverTag.wall .s{color:var(--cyan)}
 
-/* ---------- terminal ---------- */
+#danger{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;box-shadow:inset 0 0 140px 40px #ff2fb8;transition:opacity .2s}
+#flash{position:fixed;inset:0;pointer-events:none;z-index:9;display:flex;align-items:center;justify-content:center;opacity:0}
+#flash.go{animation:flash 1.6s ease-out}
+#flash span{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:clamp(34px,7vw,84px);letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--cyan),0 0 60px var(--cyan)}
+#flash.bad span{text-shadow:0 0 30px var(--err),0 0 60px var(--err)}
+#flash.go.ok{background:radial-gradient(circle,#19e6f233,transparent 70%)}
+#flash.go.bad{background:radial-gradient(circle,#ff547033,transparent 70%)}
+@keyframes flash{0%{opacity:0;transform:scale(1.4)}12%{opacity:1;transform:scale(1)}70%{opacity:1}100%{opacity:0;transform:scale(.96)}}
+
+/* terminal */
 #termWrap{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);width:min(940px,calc(100vw - 32px));z-index:7}
-#termPanel{background:#020b0ef2;border:2px solid var(--cyan);border-radius:12px;padding:18px 22px;margin-bottom:12px;max-height:62vh;overflow:auto;box-shadow:0 0 30px #19e6f244}
+#termPanel{background:#020b0ef2;border:2px solid var(--cyan);border-radius:12px;padding:18px 22px;margin-bottom:12px;max-height:64vh;overflow:auto;box-shadow:0 0 30px #19e6f244;animation:rise .25s ease-out}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 .tp-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .tp-level{font-size:11px;letter-spacing:3px;color:var(--mag-soft)}
 .tp-title{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:#fff;margin:2px 0 6px}
 .tp-close{background:none;border:1px solid #fff4;color:#fff;border-radius:6px;padding:4px 10px;font-size:12px}
+.fw{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:2px;color:var(--mag-soft);margin:2px 0 12px}
+.fwbar{flex:1;height:8px;border-radius:4px;background:#2a0820;overflow:hidden;border:1px solid #ff2fb855}
+.fwbar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--err),var(--mag));transition:width .1s linear}
+.fw b{color:#fff;min-width:54px;text-align:right}
+.fw.hot{animation:hot .5s infinite alternate}
+@keyframes hot{to{color:#fff}}
 .tp-concept{font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.5}
 .tp-concept b{color:var(--cyan)}
 pre.code{background:#000;border:1px solid #19e6f244;border-left:3px solid var(--mag);border-radius:6px;padding:12px 14px;margin:0 0 12px;font-size:14px;line-height:1.6;white-space:pre-wrap;color:#eaffff}
-pre.code .str{color:var(--mag-soft)}
-pre.code .cm{color:#5f8f96}
-pre.code .num{color:var(--warn)}
+pre.code .str{color:var(--mag-soft)}pre.code .cm{color:#5f8f96}pre.code .num{color:var(--warn)}
 .tp-q{font-size:15px;color:#fff;margin-bottom:12px;font-weight:600}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.opt{text-align:left;background:#03161b;border:1.5px solid #19e6f266;color:#eaffff;border-radius:8px;padding:11px 14px;font-size:14px;transition:background .15s,border-color .15s;-webkit-user-select:text}
-.opt:hover:not(:disabled){background:#08303a;border-color:var(--cyan)}
+.opt{text-align:left;background:#03161b;border:1.5px solid #19e6f266;color:#eaffff;border-radius:8px;padding:11px 14px;font-size:14px;transition:background .15s,border-color .15s,transform .1s}
+.opt:hover:not(:disabled){background:#08303a;border-color:var(--cyan);transform:translateY(-1px)}
 .opt .n{display:inline-block;min-width:26px;color:var(--cyan);font-weight:700}
 .opt.wrong{border-color:var(--err);background:#2a0710;color:#ffc3cc}
 .opt.right{border-color:var(--ok);background:#06301d;color:#d6ffe9}
@@ -96,58 +99,89 @@ pre.code .num{color:var(--warn)}
 .resume{margin-top:12px;background:var(--cyan);color:#001417;border:0;border-radius:8px;padding:10px 18px;font-weight:700;font-size:14px}
 .shake{animation:shake .35s}
 @keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
-
 #cmdBar{display:flex;align-items:center;gap:10px;background:#000d;border:2px solid var(--cyan);border-radius:12px;padding:12px 14px 12px 22px;box-shadow:0 0 22px #19e6f244;font-size:19px}
 #cmdBar .prompt{color:#fff;white-space:nowrap}
 #cmdText{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#eaffff}
-#cmdText .str{color:var(--mag-soft)}
-.caret{display:inline-block;width:2px;height:22px;background:#fff;animation:blink 1s steps(1) infinite;margin-left:-6px}
+#cmdText .str{color:var(--mag-soft)}#cmdText .num{color:var(--warn)}#cmdText .cm{color:#5f8f96}
+.caret{display:inline-block;width:2px;height:22px;background:#fff;animation:blink 1s steps(1) infinite;margin-left:-6px;vertical-align:middle}
 @keyframes blink{50%{opacity:0}}
 #enterBtn{width:46px;height:40px;border:2px solid var(--cyan);border-radius:8px;background:#001a1f;color:var(--cyan);display:grid;place-items:center;flex:none}
 #enterBtn svg{width:24px;height:24px}
 
-/* ---------- dpad & corner ---------- */
 #dpad{position:fixed;left:30px;bottom:30px;display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,48px);gap:6px;z-index:6}
 #dpad button{background:#071114cc;border:1px solid #ffffff22;border-radius:8px;color:#fff;font-size:20px;display:grid;place-items:center;touch-action:none}
 #dpad button.on{background:#0b3a42;border-color:var(--cyan)}
+#dpad .jump{grid-column:1;grid-row:1;font-size:10px;color:var(--cyan);border-color:#19e6f266}
 #dpad .up{grid-column:2;grid-row:1}
-#dpad .scan{grid-column:3;grid-row:1;font-size:11px;color:var(--mag-soft);border-color:#ff2fb866}
+#dpad .scan{grid-column:3;grid-row:1;font-size:10px;color:var(--mag-soft);border-color:#ff2fb866}
 #dpad .left{grid-column:1;grid-row:2}#dpad .down{grid-column:2;grid-row:2}#dpad .right{grid-column:3;grid-row:2}
 #cubeBtn{position:fixed;right:28px;bottom:28px;width:72px;height:72px;background:none;border:0;z-index:6;padding:0}
-#cubeBtn svg{width:100%;height:100%;filter:drop-shadow(0 0 8px var(--cyan))}
+#cubeBtn svg{width:100%;height:100%;filter:drop-shadow(0 0 8px var(--cyan));animation:spin 12s linear infinite}
 
-/* ---------- overlays ---------- */
-.overlay{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(ellipse at center,#001014ee,#000f);overflow:auto}
-.card{width:min(760px,100%);background:#020b0ef5;border:2px solid var(--cyan);border-radius:16px;padding:28px 30px;box-shadow:0 0 40px #19e6f244;margin:auto}
-.card h1{font-family:'Rajdhani',sans-serif;font-size:56px;margin:0;line-height:1;color:#fff;letter-spacing:1px}
-.card h1 b{color:var(--cyan);text-shadow:0 0 18px var(--cyan)}
+/* ================= OVERLAYS ================= */
+.overlay{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.dim{background:radial-gradient(ellipse at center,#001014ee,#000f)}
+.card{width:min(720px,100%);background:#020b0ef5;border:2px solid var(--cyan);border-radius:16px;padding:26px 28px;box-shadow:0 0 40px #19e6f244;margin:auto;animation:rise .3s ease-out}
 .card h2{font-family:'Rajdhani',sans-serif;font-size:34px;margin:0 0 6px;color:#fff}
-.card .sub{color:var(--muted);font-size:13px;margin:8px 0 20px;line-height:1.6}
-.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
-.row label{font-size:12px;letter-spacing:2px;color:var(--cyan)}
-input#playerName{flex:1;min-width:180px;background:#000;border:1.5px solid #19e6f288;color:#fff;border-radius:8px;padding:11px 12px;font-family:inherit;font-size:15px;text-transform:uppercase;-webkit-user-select:text;user-select:text}
-.btn{background:#03161b;border:1.5px solid var(--cyan);color:#eaffff;border-radius:8px;padding:12px 18px;font-size:14px;font-weight:600}
+.sub{color:var(--muted);font-size:13px;margin:6px 0 18px;line-height:1.6}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.btn{position:relative;overflow:hidden;background:#03161b;border:1.5px solid var(--cyan);color:#eaffff;border-radius:10px;padding:12px 20px;font-size:14px;font-weight:700;letter-spacing:1px;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 18px #19e6f266}
 .btn.primary{background:var(--cyan);color:#001417}
+.btn.primary:after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(90deg,transparent,#ffffffaa,transparent);transform:skewX(-20deg);animation:shine 2.8s infinite}
+@keyframes shine{0%,60%{left:-60%}100%{left:130%}}
 .btn.mag{border-color:var(--mag);color:#ffd9f4}
-.btn:hover{filter:brightness(1.15)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:18px}
+.btn.ghost{background:transparent;border-color:#19e6f255;color:var(--cyan);font-weight:600;font-size:13px;padding:9px 16px}
 .box{border:1px solid #19e6f233;border-radius:10px;padding:14px 16px;background:#00080a}
 .box h3{margin:0 0 10px;font-size:12px;letter-spacing:3px;color:var(--cyan);font-weight:600}
-.controls{font-size:12.5px;line-height:1.9;color:#cfeff3}
-.controls kbd{display:inline-block;min-width:22px;text-align:center;border:1px solid #19e6f288;border-radius:4px;padding:0 5px;margin-right:4px;color:#fff;font-family:inherit;font-size:11.5px}
-table.lb{width:100%;border-collapse:collapse;font-size:12.5px}
-table.lb th{text-align:left;color:var(--muted);font-weight:400;border-bottom:1px solid #19e6f233;padding:4px 4px}
-table.lb td{padding:5px 4px;border-bottom:1px solid #ffffff0d}
+table.lb{width:100%;border-collapse:collapse;font-size:13px}
+table.lb th{text-align:left;color:var(--muted);font-weight:400;border-bottom:1px solid #19e6f233;padding:5px 4px}
+table.lb td{padding:6px 4px;border-bottom:1px solid #ffffff0d}
+table.lb tr{animation:rise .3s ease-out both}
 table.lb tr.me td{color:var(--ok)}
-table.lb td.r{color:var(--mag-soft);width:26px}
-.empty{color:var(--muted);font-size:12.5px}
+table.lb td.r{color:var(--mag-soft);width:30px}
+.empty{color:var(--muted);font-size:13px}
+
+/* ---------- title screen ---------- */
+#menu{background:radial-gradient(ellipse at center,#00101480 0%,#000c 75%)}
+.menu-inner{position:relative;z-index:2;text-align:center;width:min(560px,100%);margin:auto}
+.logo{width:84px;height:84px;margin:0 auto 6px;animation:spin 10s linear infinite;filter:drop-shadow(0 0 14px var(--cyan))}
+@keyframes spin{to{transform:rotate(360deg)}}
+.title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:clamp(52px,11vw,104px);line-height:.95;margin:0;color:#fff;letter-spacing:2px;white-space:nowrap}
+.title .ch{display:inline-block;animation:drop .7s cubic-bezier(.2,1.6,.4,1) both;transition:transform .2s}
+.title .ch:hover{transform:translateY(-10px) rotate(-6deg);color:var(--mag-soft)}
+.title .td{color:var(--cyan);text-shadow:0 0 22px var(--cyan)}
+.title .glitch{animation:drop .7s cubic-bezier(.2,1.6,.4,1) both,glitch 3.2s 1.2s infinite}
+@keyframes drop{from{opacity:0;transform:translateY(-70px) scale(.6)}to{opacity:1;transform:none}}
+@keyframes glitch{0%,88%,100%{text-shadow:0 0 22px var(--cyan);transform:none}90%{text-shadow:-4px 0 var(--mag),4px 0 var(--cyan);transform:translateX(3px) skewX(-8deg)}93%{text-shadow:4px 0 var(--mag),-4px 0 var(--cyan);transform:translateX(-3px)}96%{text-shadow:0 0 22px var(--cyan);transform:none}}
+.typer{margin:14px 0 30px;font-size:15px;color:var(--muted);min-height:22px}
+.typer #typeText{color:#eaffff}
+.typer .str{color:var(--mag-soft)}
+.start{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+input#playerName{width:230px;background:#000c;border:1.5px solid #19e6f288;color:#fff;border-radius:10px;padding:12px 14px;font-family:inherit;font-size:15px;text-transform:uppercase;text-align:center;letter-spacing:2px;-webkit-user-select:text;user-select:text;transition:border-color .2s,box-shadow .2s}
+input#playerName:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 16px #19e6f266}
+#btnContinue{margin-top:12px}
+.mini{display:flex;gap:10px;justify-content:center;margin-top:26px}
+.floaters{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1;perspective:700px}
+.vox{position:absolute;width:var(--s);height:var(--s);transform-style:preserve-3d;animation:float var(--d) ease-in-out infinite alternate}
+.vox .spin{position:absolute;inset:0;transform-style:preserve-3d;animation:rot var(--r) linear infinite}
+.vox .f{position:absolute;inset:0;border:1.5px solid var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);box-shadow:0 0 12px var(--c) inset}
+@keyframes float{to{transform:translateY(-38px)}}
+@keyframes rot{to{transform:rotateX(360deg) rotateY(360deg)}}
+.sheet{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;background:#000b;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:10px 16px;font-size:13.5px;align-items:center;text-align:left}
+.keys kbd{display:inline-block;min-width:26px;text-align:center;border:1px solid #19e6f288;border-bottom-width:3px;border-radius:6px;padding:2px 7px;margin-right:3px;color:#fff;font-family:inherit;font-size:12px}
+.note{font-size:11.5px;color:#5f8f96;margin-top:12px}
+
 .winstats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
-.winstats div{border:1px solid #19e6f244;border-radius:8px;padding:10px;text-align:center}
+.winstats div{border:1px solid #19e6f244;border-radius:8px;padding:10px;text-align:center;animation:rise .4s ease-out both}
+.winstats div:nth-child(2){animation-delay:.1s}.winstats div:nth-child(3){animation-delay:.2s}.winstats div:nth-child(4){animation-delay:.3s}
 .winstats b{display:block;font-size:22px;color:var(--cyan)}
 .winstats span{font-size:11px;color:var(--muted);letter-spacing:1px}
-.note{font-size:11.5px;color:#5f8f96;margin-top:10px}
+.confetti{position:fixed;top:-20px;width:10px;height:10px;z-index:25;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 
-/* ---------- responsive ---------- */
 @media (max-width:900px){
   #probe{width:280px;left:16px;top:100px;padding:10px 12px;transform:none}
   #probeCode{font-size:12px}
@@ -160,136 +194,139 @@ table.lb td.r{color:var(--mag-soft);width:26px}
 @media (max-width:640px){
   #probe{top:150px;width:62vw;max-height:190px;overflow:hidden;padding:8px 10px}
   #probeCode{font-size:9.5px;line-height:1.4}
-  .probe-title{font-size:9px;letter-spacing:1px}
-  .probe-meta{font-size:10px}
+  .probe-title{font-size:9px;letter-spacing:1px}.probe-meta{font-size:10px}
   .stats span:first-child{display:none}
   .brand .name{display:none}
-  .opts,.grid2{grid-template-columns:1fr}
+  .opts,.winstats{grid-template-columns:1fr 1fr}
+  .opts{grid-template-columns:1fr}
   #hoverTag{left:50%;transform:translateX(-50%);top:calc(50% + 40px)}
   #hoverTag:before{display:none}
   #termWrap{bottom:130px}
   #cmdBar .prompt{display:none}
   #dpad{left:16px;bottom:16px}
   #cubeBtn{right:16px;bottom:16px;width:56px;height:56px}
-  .card{padding:20px}.card h1{font-size:40px}
-  .winstats{grid-template-columns:repeat(2,1fr)}
+  .card{padding:20px}
   #objective{top:62px;font-size:11.5px}
   #toast{top:auto;bottom:210px}
+  .typer{font-size:12px}
 }
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 </style>
 </head>
 <body>
 <canvas id="game"></canvas>
+<div id="danger"></div>
+<div id="flash"><span id="flashText"></span></div>
 
-<!-- ======== HUD ======== -->
+<!-- ================= HUD ================= -->
 <div id="hud" class="hidden">
   <div id="topbar">
     <div class="brand">
       <svg viewBox="0 0 48 48" fill="none" stroke="#19e6f2" stroke-width="2.4" stroke-linejoin="round"><path d="M24 4 42 14v20L24 44 6 34V14z"/><path d="M6 14l18 10 18-10M24 24v20"/></svg>
       <div class="name">HashDash <b>3D</b></div>
     </div>
-    <div class="stats">
-      <span id="stLevel">CHAMBER 1/4</span>
-      <span id="stObj">OBJECTIVES: 4</span>
-      <span id="stTime">TIME: 00:00</span>
-    </div>
+    <div class="stats"><span id="stLevel">CHAMBER 1/5</span><span id="stObj">OBJECTIVES: 5</span><span id="stTime">TIME: 00:00</span></div>
   </div>
   <div id="objective"></div>
   <div id="toast"></div>
-
   <div id="probe">
     <div class="probe-title"><span>SCANNER PROBE</span><span id="probeCoord">—</span></div>
     <pre id="probeCode"></pre>
     <div class="probe-meta" id="probeMeta"></div>
   </div>
-
   <div id="reticle"></div>
   <div id="hoverTag" class="hidden"></div>
-
   <div id="termWrap">
     <div id="termPanel" class="hidden"></div>
     <div id="cmdBar">
       <span class="prompt">&gt;_ run diagnostic script:</span>
       <span id="cmdText"></span><span class="caret"></span>
-      <button id="enterBtn" title="Scan / Execute (E)" aria-label="Scan or execute">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 5v7a3 3 0 0 1-3 3H5"/><path d="M9 11l-4 4 4 4"/></svg>
-      </button>
+      <button id="enterBtn" title="Scan / Execute (E)" aria-label="Scan or execute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 5v7a3 3 0 0 1-3 3H5"/><path d="M9 11l-4 4 4 4"/></svg></button>
     </div>
   </div>
-
   <div id="dpad">
+    <button class="jump" data-k="jump" aria-label="Jump">JUMP</button>
     <button class="up" data-k="f" aria-label="Forward">↑</button>
     <button class="scan" id="scanBtn" aria-label="Scan">SCAN</button>
     <button class="left" data-k="l" aria-label="Left">←</button>
     <button class="down" data-k="b" aria-label="Back">↓</button>
     <button class="right" data-k="r" aria-label="Right">→</button>
   </div>
-  <button id="cubeBtn" title="Pause menu (P)" aria-label="Pause menu">
-    <svg viewBox="0 0 48 48" fill="none" stroke="#19e6f2" stroke-width="2" stroke-linejoin="round"><path d="M24 4 42 14v20L24 44 6 34V14z"/><path d="M6 14l18 10 18-10M24 24v20"/></svg>
-  </button>
+  <button id="cubeBtn" title="Pause (P)" aria-label="Pause menu"><svg viewBox="0 0 48 48" fill="none" stroke="#19e6f2" stroke-width="2" stroke-linejoin="round"><path d="M24 4 42 14v20L24 44 6 34V14z"/><path d="M6 14l18 10 18-10M24 24v20"/></svg></button>
 </div>
 
-<!-- ======== MENU ======== -->
+<!-- ================= TITLE ================= -->
 <div id="menu" class="overlay">
-  <div class="card">
-    <h1>HashDash <b>3D</b></h1>
-    <div class="sub">A first-person voxel puzzle for CBSE Class XI Computer Science (083). Every block in this world is an entry in a Python dictionary: <span style="color:#fff">world_data["x,y,z"] = "BlockType"</span>. Aim the probe at magenta nodes, solve the diagnostic, and reshape the dictionary to escape.</div>
-    <div class="row">
-      <label for="playerName">CALLSIGN</label>
-      <input id="playerName" maxlength="14" placeholder="ENTER NAME" autocomplete="off">
-    </div>
-    <div class="row">
+  <div class="floaters" id="floaters"></div>
+  <div class="menu-inner">
+    <svg class="logo" viewBox="0 0 48 48" fill="none" stroke="#19e6f2" stroke-width="2" stroke-linejoin="round"><path d="M24 4 42 14v20L24 44 6 34V14z"/><path d="M6 14l18 10 18-10M24 24v20"/></svg>
+    <h1 class="title" id="title" aria-label="HashDash 3D"></h1>
+    <div class="typer">&gt;&gt;&gt; <span id="typeText"></span><span class="caret" style="height:16px;margin-left:2px"></span></div>
+    <div class="start">
+      <input id="playerName" maxlength="14" placeholder="CALLSIGN" autocomplete="off" aria-label="Callsign">
       <button class="btn primary" id="btnNew">▶ NEW RUN</button>
-      <button class="btn mag hidden" id="btnContinue">⟳ CONTINUE</button>
     </div>
-    <div class="grid2">
-      <div class="box controls">
-        <h3>CONTROLS</h3>
-        <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / arrows: move &nbsp; <kbd>Shift</kbd> sprint</div>
-        <div><kbd>Mouse</kbd> look (click the screen to lock)</div>
-        <div><kbd>Click</kbd> or <kbd>E</kbd>: scan the block under the reticle</div>
-        <div><kbd>1</kbd>–<kbd>4</kbd> pick an answer &nbsp; <kbd>Enter</kbd> resume</div>
-        <div><kbd>Esc</kbd> / <kbd>P</kbd> pause, progress auto-saves</div>
-        <div style="color:var(--muted)">Touch: drag to look, D-pad to move, SCAN to probe.</div>
-      </div>
-      <div class="box">
-        <h3>LEADERBOARD · TOP 10</h3>
-        <div id="lbMenu"></div>
-      </div>
+    <button class="btn mag hidden" id="btnContinue">⟳ CONTINUE</button>
+    <div class="mini">
+      <button class="btn ghost" id="btnLb">🏆 Leaderboard</button>
+      <button class="btn ghost" id="btnHelp">⌨ How to play</button>
     </div>
-    <div class="note">Score = time + 15 s for every wrong answer. Lowest score wins. The leaderboard and saves are stored in this browser.</div>
   </div>
 </div>
 
-<!-- ======== PAUSE ======== -->
-<div id="pause" class="overlay hidden">
+<div id="sheetLb" class="sheet hidden">
+  <div class="card">
+    <h2>🏆 Leaderboard</h2>
+    <div id="lbMenu"></div>
+    <div class="note">Score = time + 15 s per wrong answer or firewall breach. Lowest wins. Stored in this browser.</div>
+    <div class="row" style="margin:16px 0 0"><button class="btn" data-close>CLOSE</button></div>
+  </div>
+</div>
+<div id="sheetHelp" class="sheet hidden">
+  <div class="card">
+    <h2>⌨ How to play</h2>
+    <div class="keys">
+      <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>Move (<kbd>Shift</kbd> to sprint)</span>
+      <span><kbd>Space</kbd></span><span>Jump across gaps and hurdles</span>
+      <span><kbd>Mouse</kbd></span><span>Look around (click to lock)</span>
+      <span><kbd>E</kbd> / <kbd>Click</kbd></span><span>Scan the magenta node</span>
+      <span><kbd>1</kbd>–<kbd>4</kbd></span><span>Answer, then <kbd>Enter</kbd></span>
+      <span><kbd>Esc</kbd></span><span>Pause (progress auto-saves)</span>
+    </div>
+    <div class="sub" style="margin-top:16px">⚠ Once a diagnostic opens, a <b style="color:var(--mag-soft)">firewall</b> closes in from behind. Answer before it shoves you off!</div>
+    <div class="row" style="margin:0"><button class="btn" data-close>GOT IT</button></div>
+  </div>
+</div>
+
+<!-- ================= PAUSE ================= -->
+<div id="pause" class="overlay dim hidden">
   <div class="card">
     <h2>SYSTEM PAUSED</h2>
     <div class="sub" id="pauseInfo"></div>
     <div class="row">
       <button class="btn primary" id="btnResume">▶ RESUME</button>
-      <button class="btn" id="btnQuit">SAVE &amp; QUIT TO TITLE</button>
-      <button class="btn mag" id="btnRestart">RESTART RUN</button>
+      <button class="btn" id="btnQuit">SAVE &amp; QUIT</button>
+      <button class="btn mag" id="btnRestart">RESTART</button>
     </div>
-    <div class="box" style="margin-top:10px"><h3>LEADERBOARD · TOP 10</h3><div id="lbPause"></div></div>
+    <div class="box"><h3>LEADERBOARD</h3><div id="lbPause"></div></div>
   </div>
 </div>
 
-<!-- ======== WIN ======== -->
-<div id="win" class="overlay hidden">
+<!-- ================= WIN ================= -->
+<div id="win" class="overlay dim hidden">
   <div class="card">
     <h2>EXTRACTION COMPLETE</h2>
-    <div class="sub">All four chambers resolved. <span style="color:#fff">world_data</span> is clean and you escaped through the portal.</div>
+    <div class="sub">All five chambers resolved. <span style="color:#fff">world_data</span> is clean.</div>
     <div class="winstats">
       <div><b id="wTime">00:00</b><span>TIME</span></div>
-      <div><b id="wMist">0</b><span>WRONG ANSWERS</span></div>
+      <div><b id="wMist">0</b><span>PENALTIES</span></div>
       <div><b id="wScore">00:00</b><span>SCORE</span></div>
       <div><b id="wRank">#1</b><span>RANK</span></div>
     </div>
-    <div class="box"><h3>LEADERBOARD · TOP 10</h3><div id="lbWin"></div></div>
-    <div class="row" style="margin-top:16px">
+    <div class="box"><h3>LEADERBOARD</h3><div id="lbWin"></div></div>
+    <div class="row" style="margin:16px 0 0">
       <button class="btn primary" id="btnAgain">▶ PLAY AGAIN</button>
-      <button class="btn" id="btnTitle">TITLE SCREEN</button>
+      <button class="btn" id="btnTitle">TITLE</button>
     </div>
   </div>
 </div>
@@ -301,86 +338,141 @@ table.lb td.r{color:var(--mag-soft);width:26px}
 if (!window.THREE) { document.body.innerHTML = '<p style="padding:30px;color:#fff;font-family:monospace">Could not load Three.js from the CDN. Check your connection and reload.</p>'; return; }
 
 /* =========================================================
-   1. CONSTANTS, LEVEL DATA
+   1. CONSTANTS + CBSE QUESTION BANK (5 chambers, 3 questions each)
    ========================================================= */
 const $ = id => document.getElementById(id);
-const SAVE_KEY = 'hashdash3d_save_v1';
-const LB_KEY = 'hashdash3d_leaderboard_v1';
-const NAME_KEY = 'hashdash3d_name_v1';
-const PENALTY = 15;
-const SCAN_RANGE = 7.5;
-const NONSOLID = new Set(['Portal']);
-const NODE_LEVEL = { KeyWall:0, RegistryNode:1, TraversalNode:2, FlushNode:3 };
-const CHECKPOINTS = [ {x:0,z:0}, {x:0,z:-14}, {x:0,z:-30}, {x:0,z:-45}, {x:0,z:-45} ];
+const SAVE_KEY = 'hashdash3d_save_v2', LB_KEY = 'hashdash3d_leaderboard_v1', NAME_KEY = 'hashdash3d_name_v1';
+const PENALTY = 15, SCAN_RANGE = 7.5, NUM_LEVELS = 5;
+const NONSOLID = new Set(['Portal', 'Passage']);
+const NODE_LEVEL = { KeyWall:0, RegistryNode:1, MutationNode:2, TraversalNode:3, FlushNode:4 };
+const NODE_TYPES = ['KeyWall', 'RegistryNode', 'MutationNode', 'TraversalNode', 'FlushNode'];
+const CHECKPOINTS = [ {x:0,z:0}, {x:0,z:-14}, {x:0,z:-31}, {x:0,z:-47}, {x:0,z:-63}, {x:0,z:-63} ];
+const FIREWALL_TIME = [40, 36, 32, 28, 25];     // seconds until the firewall reaches you
+const JUMP_V = 8.5, GRAVITY = 24, PLAYER_H = 1.7, PLAYER_R = 0.3;
 const OBJECTIVES = [
-  'Scan the magenta <b>KeyWall</b> gate ahead and run its diagnostic.',
+  'Hop the hurdle (<b>Space</b>), then scan the magenta <b>KeyWall</b> gate.',
   'A chasm cuts the floor. Scan the <b>RegistryNode</b> on the left wall.',
-  'The vault is sealed. Scan the <b>TraversalNode</b> on the right wall.',
+  'Jump the zig-zag bridge, clear the hurdles, then scan the <b>MutationNode</b> (right wall).',
+  'Leap the pit and scan the <b>TraversalNode</b> on the right wall.',
   'Garbage voxels block the exit. Scan the <b>FlushNode</b> on the left wall.',
   'Portal online. Walk into the <b>extraction portal</b>.'
 ];
 
 const LEVELS = [
-  {
-    title: 'The Key Validation Wall',
-    concept: 'Dictionary <b>keys must be immutable</b> (hashable): int, float, str, tuple. A <b>list</b> is mutable, so it can never be a key.',
-    code: null,
-    question: 'Which initialization raises a TypeError in Python?',
-    options: [
-      { t: 'd = {(1, 2): "tuple-key"}', why: 'Tuples are immutable, so they are hashable. This is a valid key.' },
-      { t: 'd = {"roll_no": 101}', why: 'Strings are immutable. This is the most common kind of key and it is valid.' },
-      { t: 'd = {[1, 2]: "list-key"}', ok: true },
-      { t: 'd = {3.14: "pi"}', why: 'Floats are immutable numbers, so this key is valid.' }
-    ],
-    explain: '<code>TypeError: unhashable type: \'list\'</code>. Lists are mutable, so Python cannot hash them. Dictionary keys must be immutable types.',
-    cmd: 'for k in gate_keys: world_data.pop(k)'
-  },
-  {
-    title: 'The Missing Registry Alert',
-    concept: 'Reading a key that does not exist with <b>d[key]</b> raises a <b>KeyError</b>. Only <b>d.get(key)</b> returns None quietly.',
-    code: 'registry = {"A101": "Aarav", "A102": "Diya"}\nprint(registry["A103"])',
-    question: 'What happens when this script runs?',
-    options: [
-      { t: 'None', why: 'None is what registry.get("A103") would return. Square-bracket access does not fall back to None.' },
-      { t: "KeyError: 'A103'", ok: true },
-      { t: '""   (an empty string)', why: 'Python never makes up a default value for a missing key.' },
-      { t: '{}', why: 'Reading one key can never return a whole (empty) dictionary.' }
-    ],
-    explain: '<code>registry["A103"]</code> raises <code>KeyError: \'A103\'</code> because that key is not in the dictionary. To read safely, use <code>registry.get("A103")</code> or check <code>"A103" in registry</code> first.',
-    cmd: 'world_data.update({f"{x},0,{z}": "NeonBridge" for x, z in chasm})'
-  },
-  {
-    title: 'The Traversal Network',
-    concept: '<b>len(d)</b> counts the <b>distinct key-value pairs</b>. Keys are unique, so a repeated key overwrites the earlier value.',
-    code: 'config = {"mode": "auto", "speed": 3,\n          "mode": "manual", "level": 7}\nprint(len(config))',
-    question: 'What is the exact output?',
-    options: [
-      { t: '4', why: 'There are 4 items written, but "mode" appears twice. The second one overwrites the first, so it does not add a new pair.' },
-      { t: '3', ok: true },
-      { t: '8', why: 'len() counts key-value pairs. It does not count keys and values separately.' },
-      { t: '2', why: '"mode", "speed" and "level" are three distinct keys.' }
-    ],
-    explain: 'The second <code>"mode"</code> overwrites the first, leaving <code>{"mode": "manual", "speed": 3, "level": 7}</code>, so <code>len(config)</code> is <code>3</code>.',
-    cmd: 'pillars.update(state="ONLINE"); world_data.pop("vault_door")'
-  },
-  {
-    title: 'The System Flush Portal',
-    concept: '<b>d.clear()</b> removes every item but keeps the dictionary object, which becomes <b>{}</b>. <b>del d</b> removes the variable itself.',
-    code: 'cache = {"tmp1": 0xFF, "tmp2": 0xAB, "tmp3": 0x00}\n# ??? wipe every key but keep the object\nprint(cache)    # expected output: {}',
-    question: 'Which statement replaces ??? to produce the expected output?',
-    options: [
-      { t: 'del cache', why: 'del deletes the variable entirely, so the following print(cache) raises NameError.' },
-      { t: 'cache.pop()', why: 'dict.pop() needs a key argument, so this raises TypeError: pop expected at least 1 argument.' },
-      { t: 'cache.clear()', ok: true },
-      { t: 'cache.remove("tmp1")', why: 'Dictionaries have no remove() method (that is a list method), so this raises AttributeError.' }
-    ],
-    explain: '<code>cache.clear()</code> empties the dictionary in place. The object still exists, so <code>print(cache)</code> prints <code>{}</code>.',
-    cmd: 'garbage_sector.clear()   # -> {}'
-  }
+  { title: 'The Key Validation Wall', cmd: 'for k in gate_keys: world_data.pop(k)',
+    concept: 'Keys must be <b>immutable</b> (hashable): int, float, str, tuple. Mutable types like <b>list</b>, <b>dict</b> and <b>set</b> cannot be keys.',
+    pool: [
+      { code: null, question: 'Which initialization raises a TypeError in Python?',
+        options: [ { t: 'd = {(1, 2): "tuple-key"}', why: 'A tuple is immutable, so it is hashable and a valid key.' },
+                   { t: 'd = {"roll_no": 101}', why: 'A string is immutable. This key is valid.' },
+                   { t: 'd = {[1, 2]: "list-key"}', ok: true },
+                   { t: 'd = {3.14: "pi"}', why: 'A float is immutable, so this key is valid.' } ],
+        explain: '<code>TypeError: unhashable type: \'list\'</code>. A list is mutable, so it cannot be a key.' },
+      { code: null, question: 'Which of the following CAN be used as a dictionary key?',
+        options: [ { t: '[10, 20]', why: 'A list is mutable, so it raises TypeError: unhashable type.' },
+                   { t: '{"a": 1}', why: 'A dictionary is mutable, so it cannot be a key of another dictionary.' },
+                   { t: '(10, 20)', ok: true },
+                   { t: '{10, 20}', why: 'A set is mutable, so it is unhashable.' } ],
+        explain: 'A tuple like <code>(10, 20)</code> is immutable, so it can be a key. For example, <code>grid[(10, 20)] = "Wall"</code>.' },
+      { code: 'd = dict(name="Riya", cls=11)\nprint(d)', question: 'What is the output?',
+        options: [ { t: "{'name': 'Riya', 'cls': 11}", ok: true },
+                   { t: "{name: 'Riya', cls: 11}", why: 'The keyword names become string keys, so they print with quotes.' },
+                   { t: "[('name', 'Riya'), ('cls', 11)]", why: 'That is what list(d.items()) prints. dict() builds a dictionary.' },
+                   { t: 'SyntaxError', why: 'dict() accepts keyword arguments, so this is valid code.' } ],
+        explain: '<code>dict(name="Riya", cls=11)</code> turns each keyword into a string key, giving <code>{\'name\': \'Riya\', \'cls\': 11}</code>.' }
+    ] },
+  { title: 'The Missing Registry Alert', cmd: 'world_data.update({k: "NeonBridge" for k in zigzag_path})',
+    concept: '<b>d[key]</b> raises <b>KeyError</b> for a missing key. <b>d.get(key, default)</b> returns None or the default instead. <b>in</b> checks keys only.',
+    pool: [
+      { code: 'registry = {"A101": "Aarav", "A102": "Diya"}\nprint(registry["A103"])', question: 'What happens when this runs?',
+        options: [ { t: 'None', why: 'None is what registry.get("A103") returns. Square brackets do not return None.' },
+                   { t: "KeyError: 'A103'", ok: true },
+                   { t: '""  (empty string)', why: 'Python never makes up a value for a missing key.' },
+                   { t: '{}', why: 'Reading one key never returns a dictionary.' } ],
+        explain: 'Reading a missing key with <code>d[key]</code> raises <code>KeyError</code>. Use <code>.get()</code> or check with <code>in</code> first.' },
+      { code: 'marks = {"Eng": 88, "CS": 95}\nprint(marks.get("Maths", 0) + marks.get("CS"))', question: 'What is the output?',
+        options: [ { t: '95', ok: true },
+                   { t: "KeyError: 'Maths'", why: '.get() never raises KeyError. It returns the default (0) instead.' },
+                   { t: 'None', why: 'With a default of 0, .get("Maths", 0) returns 0, not None.' },
+                   { t: 'TypeError', why: 'You would get this only if a None were added to an int, but here both values are ints (0 + 95).' } ],
+        explain: '<code>marks.get("Maths", 0)</code> gives <code>0</code> and <code>marks.get("CS")</code> gives <code>95</code>, so it prints <code>95</code>.' },
+      { code: 'd = {"x": 10, "y": 20}\nprint("10" in d, "x" in d)', question: 'What is the output?',
+        options: [ { t: 'True True', why: '"in" only checks keys. "10" is not a key (10 is a value, and an int, not a str).' },
+                   { t: 'False True', ok: true },
+                   { t: 'True False', why: '"x" is a key, so "x" in d is True.' },
+                   { t: 'False False', why: '"x" is definitely one of the keys.' } ],
+        explain: 'The <code>in</code> operator tests <b>keys</b> only. <code>"10"</code> is not a key, but <code>"x"</code> is, so it prints <code>False True</code>.' }
+    ] },
+  { title: 'The Mutation Engine', cmd: 'world_data.update({k: "Passage" for k in mutex_gate})',
+    concept: '<b>d[k] = v</b> changes an existing key or adds a new one. <b>update()</b> merges in another dictionary and overwrites duplicate keys. <b>setdefault()</b> inserts a key only if it is missing.',
+    pool: [
+      { code: 'stock = {"pen": 10, "ink": 5}\nstock["pen"] = 12\nstock["nib"] = 7\nprint(stock)', question: 'What is the output?',
+        options: [ { t: "{'pen': 12, 'ink': 5, 'nib': 7}", ok: true },
+                   { t: "{'pen': 10, 'ink': 5, 'nib': 7}", why: 'stock["pen"] = 12 replaces the old value 10.' },
+                   { t: "{'pen': 12, 'ink': 5}", why: 'Assigning to a new key ("nib") adds it to the dictionary.' },
+                   { t: "KeyError: 'nib'", why: 'Assigning to a missing key adds it. Only reading a missing key raises KeyError.' } ],
+        explain: 'An existing key gets its value replaced and a new key gets added: <code>{\'pen\': 12, \'ink\': 5, \'nib\': 7}</code>.' },
+      { code: 'a = {"r": 1, "g": 2}\na.update({"g": 9, "b": 3})\nprint(a)', question: 'What is the output?',
+        options: [ { t: "{'r': 1, 'g': 2, 'b': 3}", why: 'update() overwrites the existing key "g" with the new value 9.' },
+                   { t: "{'r': 1, 'g': 9, 'b': 3}", ok: true },
+                   { t: "{'r': 1, 'g': 2, 'g': 9, 'b': 3}", why: 'Keys are unique, so a dictionary can never hold "g" twice.' },
+                   { t: 'None', why: 'update() returns None, but we print a, which has been changed in place.' } ],
+        explain: '<code>update()</code> overwrites <code>"g"</code> and adds <code>"b"</code>, giving <code>{\'r\': 1, \'g\': 9, \'b\': 3}</code>.' },
+      { code: 'd = {"a": 1}\nx = d.setdefault("a", 5)\ny = d.setdefault("b", 7)\nprint(x, y, d)', question: 'What is the output?',
+        options: [ { t: "1 7 {'a': 1, 'b': 7}", ok: true },
+                   { t: "5 7 {'a': 5, 'b': 7}", why: 'setdefault() never overwrites a key that already exists, so "a" stays 1.' },
+                   { t: "1 None {'a': 1}", why: 'A missing key is inserted with the given default (7), and that value is returned.' },
+                   { t: "KeyError: 'b'", why: 'setdefault() is a safe method. It inserts missing keys instead of raising an error.' } ],
+        explain: '<code>setdefault</code> returns the existing value (1) for <code>"a"</code>, and inserts and returns 7 for <code>"b"</code>.' }
+    ] },
+  { title: 'The Traversal Network', cmd: 'pillars.update(state="ONLINE"); world_data.pop("vault_door")',
+    concept: '<b>len(d)</b> counts key-value pairs. <b>for k in d</b> loops over the <b>keys</b>. <b>max()</b> and <b>sorted()</b> on a dictionary work on its keys unless you pass <b>.values()</b>.',
+    pool: [
+      { code: 'config = {"mode": "auto", "speed": 3,\n          "mode": "manual", "level": 7}\nprint(len(config))', question: 'What is the exact output?',
+        options: [ { t: '4', why: 'The second "mode" overwrites the first, so it does not add a new pair.' },
+                   { t: '3', ok: true },
+                   { t: '8', why: 'len() counts pairs, not keys and values separately.' },
+                   { t: '2', why: '"mode", "speed" and "level" are three distinct keys.' } ],
+        explain: 'Keys are unique, so the dictionary ends up as <code>{"mode": "manual", "speed": 3, "level": 7}</code>, and <code>len</code> is <code>3</code>.' },
+      { code: 'd = {"a": 3, "b": 1, "c": 2}\nfor k in d:\n    print(k, end="")', question: 'What is the output?',
+        options: [ { t: 'abc', ok: true },
+                   { t: '312', why: 'Looping over a dictionary gives its keys, not its values. For values, use d.values().' },
+                   { t: 'a3b1c2', why: 'Only the keys are printed. Keys and values together need d.items().' },
+                   { t: "('a', 3)('b', 1)('c', 2)", why: 'That would need for item in d.items().' } ],
+        explain: '<code>for k in d</code> goes through the <b>keys</b> in insertion order, so it prints <code>abc</code>.' },
+      { code: 'p = {"x": 4, "y": 9, "z": 2}\nprint(max(p), sorted(p.values()))', question: 'What is the output?',
+        options: [ { t: '9 [2, 4, 9]', why: 'max(p) compares the keys, not the values. The largest key string is "z".' },
+                   { t: 'z [2, 4, 9]', ok: true },
+                   { t: 'y [2, 4, 9]', why: '"y" holds the largest value, but max(p) compares keys alphabetically.' },
+                   { t: 'z [9, 4, 2]', why: 'sorted() returns ascending order unless reverse=True.' } ],
+        explain: '<code>max(p)</code> works on the keys, so it gives <code>\'z\'</code>. <code>sorted(p.values())</code> gives <code>[2, 4, 9]</code>.' }
+    ] },
+  { title: 'The System Flush Portal', cmd: 'garbage_sector.clear()   # -> {}',
+    concept: '<b>clear()</b> empties a dictionary in place, leaving <b>{}</b>. <b>pop(k)</b> removes one key and returns its value. <b>del d</b> deletes the variable itself. <b>copy()</b> makes an independent copy.',
+    pool: [
+      { code: 'cache = {"tmp1": 0xFF, "tmp2": 0xAB}\n# ??? wipe every key but keep the object\nprint(cache)    # expected output: {}', question: 'Which statement replaces ??? to produce the expected output?',
+        options: [ { t: 'del cache', why: 'del removes the variable itself, so print(cache) raises NameError.' },
+                   { t: 'cache.pop()', why: 'dict.pop() needs a key argument, so this raises TypeError.' },
+                   { t: 'cache.clear()', ok: true },
+                   { t: 'cache.remove("tmp1")', why: 'Dictionaries have no remove() method, so this raises AttributeError.' } ],
+        explain: '<code>cache.clear()</code> empties the dictionary in place, so <code>print(cache)</code> prints <code>{}</code>.' },
+      { code: 'd = {"k1": 5, "k2": 8}\nv = d.pop("k1")\nprint(v, d)', question: 'What is the output?',
+        options: [ { t: "5 {'k2': 8}", ok: true },
+                   { t: "k1 {'k2': 8}", why: 'pop() returns the removed value, not the key.' },
+                   { t: "5 {'k1': 5, 'k2': 8}", why: 'pop() removes the key from the dictionary.' },
+                   { t: "{'k1': 5} {'k2': 8}", why: 'pop() returns only the value, not a dictionary.' } ],
+        explain: '<code>d.pop("k1")</code> removes <code>"k1"</code> and returns its value <code>5</code>, leaving <code>{\'k2\': 8}</code>.' },
+      { code: 'a = {"m": 1}\nb = a\nc = a.copy()\na.clear()\nprint(b, c)', question: 'What is the output?',
+        options: [ { t: "{'m': 1} {'m': 1}", why: 'b = a does not copy anything. b is the same object as a, so clearing a also empties b.' },
+                   { t: "{} {'m': 1}", ok: true },
+                   { t: '{} {}', why: 'copy() made an independent dictionary, so c is unaffected.' },
+                   { t: "{'m': 1} {}", why: 'It is the other way round: b shares a\'s object and c is the independent copy.' } ],
+        explain: '<code>b</code> is another name for the same object, so it is emptied too. <code>c</code> is a separate copy and keeps <code>{\'m\': 1}</code>.' }
+    ] }
 ];
 
 /* =========================================================
-   2. STORAGE (save progress + leaderboard)
+   2. STORAGE
    ========================================================= */
 const store = {
   get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
@@ -388,23 +480,18 @@ const store = {
   del(k){ try { localStorage.removeItem(k); } catch(e){} }
 };
 function getBoard(){ const b = store.get(LB_KEY, []); return Array.isArray(b) ? b : []; }
-function addToBoard(entry){
-  const b = getBoard(); b.push(entry);
-  b.sort((a,c) => a.score - c.score || a.mistakes - c.mistakes);
-  const top = b.slice(0, 10); store.set(LB_KEY, top);
-  return top.indexOf(entry);
-}
+function addToBoard(entry){ const b = getBoard(); b.push(entry); b.sort((a,c) => a.score - c.score || a.mistakes - c.mistakes); const top = b.slice(0, 10); store.set(LB_KEY, top); return top.indexOf(entry); }
 function fmt(t){ t = Math.max(0, Math.floor(t)); return String(Math.floor(t/60)).padStart(2,'0') + ':' + String(t%60).padStart(2,'0'); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function renderBoard(el, highlightIdx){
+function renderBoard(el, hi){
   const b = getBoard();
   if (!b.length) { el.innerHTML = '<div class="empty">No runs logged yet. Be the first to escape!</div>'; return; }
-  el.innerHTML = '<table class="lb"><tr><th>#</th><th>NAME</th><th>SCORE</th><th>TIME</th><th>ERR</th></tr>' +
-    b.map((e,i) => `<tr class="${i===highlightIdx?'me':''}"><td class="r">${i+1}</td><td>${esc(e.name)}</td><td>${fmt(e.score)}</td><td>${fmt(e.time)}</td><td>${e.mistakes}</td></tr>`).join('') + '</table>';
+  el.innerHTML = '<table class="lb"><tr><th>#</th><th>NAME</th><th>SCORE</th><th>TIME</th><th>PEN</th></tr>' +
+    b.map((e,i) => `<tr class="${i===hi?'me':''}" style="animation-delay:${i*0.04}s"><td class="r">${['🥇','🥈','🥉'][i] || i+1}</td><td>${esc(e.name)}</td><td>${fmt(e.score)}</td><td>${fmt(e.time)}</td><td>${e.mistakes}</td></tr>`).join('') + '</table>';
 }
 
 /* =========================================================
-   3. RENDERER, SCENE, MATERIALS
+   3. RENDERER + MATERIALS
    ========================================================= */
 const canvas = $('game');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -419,32 +506,29 @@ scene.add(new THREE.AmbientLight(0x88aabb, 0.55));
 const sun = new THREE.DirectionalLight(0xbff8ff, 0.65); sun.position.set(4, 10, 6); scene.add(sun);
 
 function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-
-function canvasTex(draw){
-  const c = document.createElement('canvas'); c.width = c.height = 128;
-  const g = c.getContext('2d'); draw(g, 128);
-  const t = new THREE.CanvasTexture(c); t.anisotropy = renderer.capabilities.getMaxAnisotropy ? Math.min(8, renderer.capabilities.getMaxAnisotropy()) : 1;
-  return t;
+function canvasTex(draw, w, h){
+  const c = document.createElement('canvas'); c.width = w || 128; c.height = h || 128;
+  draw(c.getContext('2d'), c.width, c.height);
+  const t = new THREE.CanvasTexture(c); t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); return t;
 }
 function blockTex(fill, edge, o){
   o = o || {};
   return canvasTex((g, s) => {
     g.fillStyle = fill; g.fillRect(0,0,s,s);
-    const gr = g.createLinearGradient(0,0,s,s); gr.addColorStop(0,'rgba(255,255,255,0.07)'); gr.addColorStop(1,'rgba(0,0,0,0.3)');
-    g.fillStyle = gr; g.fillRect(0,0,s,s);
+    const gr = g.createLinearGradient(0,0,s,s); gr.addColorStop(0,'rgba(255,255,255,0.07)'); gr.addColorStop(1,'rgba(0,0,0,0.3)'); g.fillStyle = gr; g.fillRect(0,0,s,s);
     g.strokeStyle = edge; g.lineWidth = o.lw || 5; g.strokeRect(2.5,2.5,s-5,s-5);
     if (o.inner) { g.globalAlpha = 0.3; g.lineWidth = 2; g.strokeRect(22,22,s-44,s-44); g.globalAlpha = 1; }
     if (o.glyph) o.glyph(g, s);
   });
 }
-function lambert(tex, intensity, extra){
-  return new THREE.MeshLambertMaterial(Object.assign({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: intensity }, extra || {}));
-}
+const lambert = (tex, i, extra) => new THREE.MeshLambertMaterial(Object.assign({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: i }, extra || {}));
 const glyphLock = (g,s) => { g.strokeStyle='#fff'; g.fillStyle='#fff'; g.lineWidth=7; g.beginPath(); g.arc(s/2, s*0.42, s*0.14, Math.PI, 0); g.stroke(); g.fillRect(s*0.3, s*0.42, s*0.4, s*0.3); g.fillStyle='#ff2fb8'; g.beginPath(); g.arc(s/2, s*0.55, 6, 0, Math.PI*2); g.fill(); g.fillRect(s/2-3, s*0.55, 6, 14); };
 const glyphScan = (g,s) => { g.strokeStyle='#fff'; g.lineWidth=5; g.beginPath(); g.arc(s/2,s/2,s*0.22,0,Math.PI*2); g.stroke(); g.fillStyle='#fff'; g.beginPath(); g.arc(s/2,s/2,6,0,Math.PI*2); g.fill(); [[0,-1],[0,1],[-1,0],[1,0]].forEach(([dx,dy])=>{ g.fillRect(s/2+dx*s*0.3-(dx?6:2.5), s/2+dy*s*0.3-(dy?6:2.5), dx?12:5, dy?12:5); }); };
 const glyphArrow = (g,s) => { g.strokeStyle='#e9ffff'; g.lineWidth=7; g.beginPath(); g.moveTo(s*0.3,s*0.62); g.lineTo(s*0.5,s*0.4); g.lineTo(s*0.7,s*0.62); g.stroke(); };
 const glyphStripes = (g,s) => { g.strokeStyle='rgba(255,47,184,0.55)'; g.lineWidth=6; for(let i=-s;i<s*2;i+=26){ g.beginPath(); g.moveTo(i,0); g.lineTo(i+s,s); g.stroke(); } };
-const glyphNoise = (g,s) => { const r = rng(7); for(let i=0;i<70;i++){ g.fillStyle = r()<0.5 ? 'rgba(255,47,184,'+(0.3+r()*0.6)+')' : 'rgba(25,230,242,'+(0.3+r()*0.6)+')'; const w = 6 + (r()*18|0); g.fillRect(r()*s|0, r()*s|0, w, 4 + (r()*8|0)); } };
+const glyphChevron = (g,s) => { g.strokeStyle='rgba(255,209,102,0.9)'; g.lineWidth=8; for (let i=0;i<3;i++){ g.beginPath(); g.moveTo(14+i*36,30); g.lineTo(32+i*36,s/2); g.lineTo(14+i*36,s-30); g.stroke(); } };
+const glyphNoise = (g,s) => { const r = rng(7); for(let i=0;i<70;i++){ g.fillStyle = r()<0.5 ? 'rgba(255,47,184,'+(0.3+r()*0.6)+')' : 'rgba(25,230,242,'+(0.3+r()*0.6)+')'; g.fillRect(r()*s|0, r()*s|0, 6+(r()*18|0), 4+(r()*8|0)); } };
+const glyphHex = (g,s) => { g.fillStyle='rgba(255,255,255,0.75)'; g.font='bold 22px monospace'; g.textAlign='center'; g.fillText('0x', s/2, s/2+8); };
 
 const MAT = {
   floor:    lambert(blockTex('#03080b', '#0d8f9c', {lw:4}), 0.75),
@@ -452,8 +536,11 @@ const MAT = {
   accent:   lambert(blockTex('#13c8d6', '#c8fdff', {lw:6}), 0.95),
   gate:     lambert(blockTex('#b0127c', '#ff8fe8', {lw:6, inner:true}), 0.95, { transparent:true, opacity:0.82 }),
   gateLock: lambert(blockTex('#c0168a', '#ffb0f0', {lw:6, glyph:glyphLock}), 1, { transparent:true, opacity:0.92 }),
+  mutex:    lambert(blockTex('#5a0c46', '#ff5fd2', {lw:6, glyph:glyphHex}), 0.9),
   node:     lambert(blockTex('#d11b98', '#ffc2f3', {lw:7, glyph:glyphScan}), 1),
   nodeDone: lambert(blockTex('#0d3a40', '#3dffa8', {lw:5, glyph:glyphScan}), 0.8),
+  hurdle:   lambert(blockTex('#1c1606', '#ffd166', {lw:5, glyph:glyphChevron}), 0.85),
+  stone:    lambert(blockTex('#0a2a30', '#7ff9ff', {lw:6, inner:true}), 0.95),
   pillarOff:lambert(blockTex('#0a171c', '#2b5a63', {inner:true}), 0.6),
   pillarOn: lambert(blockTex('#33f3ff', '#ffffff', {lw:6, inner:true}), 1),
   vault:    lambert(blockTex('#2a0620', '#ff2fb8', {lw:6, glyph:glyphStripes}), 0.85),
@@ -463,59 +550,67 @@ const MAT = {
 };
 const BOX = new THREE.BoxGeometry(1,1,1);
 
-/* =========================================================
-   4. DECORATIVE BACKDROP (built once, instanced)
-   ========================================================= */
+/* ---------- static backdrop ---------- */
 (function buildDecor(){
   const r = rng(1337), dark = [], bright = [];
-  for (let i = 0; i < 230; i++) {
+  for (let i = 0; i < 280; i++) {
     const side = r() < 0.5 ? -1 : 1;
-    const x = side * (6 + Math.floor(r()*26)), z = 14 - Math.floor(r()*96);
+    const x = side * (6 + Math.floor(r()*26)), z = 14 - Math.floor(r()*112);
     const h = 1 + Math.floor(r()*r()*14), base = -6 + Math.floor(r()*3);
     for (let y = 0; y < h; y++) ((r() < 0.07) ? bright : dark).push([x, base + y, z]);
     if (r() < 0.25) bright.push([x + (r()<0.5?-1:1), base + h + Math.floor(r()*4), z]);
   }
-  for (let i = 0; i < 40; i++) bright.push([ (r()<0.5?-1:1)*(5+Math.floor(r()*20)), 4 + Math.floor(r()*9), 10 - Math.floor(r()*80) ]);
+  for (let i = 0; i < 50; i++) bright.push([(r()<0.5?-1:1)*(5+Math.floor(r()*20)), 4 + Math.floor(r()*9), 10 - Math.floor(r()*96)]);
   const m = new THREE.Matrix4();
   [[dark, MAT.wall], [bright, MAT.accent]].forEach(([list, mat]) => {
     const im = new THREE.InstancedMesh(BOX, mat, list.length);
     list.forEach((p, i) => { m.makeTranslation(p[0], p[1], p[2]); im.setMatrixAt(i, m); });
     im.frustumCulled = false; scene.add(im);
   });
-  const grid = new THREE.GridHelper(220, 220, 0x0b5560, 0x06262b); grid.position.set(0, -6.5, -30); scene.add(grid);
-  const n = 500, pos = new Float32Array(n*3);
-  for (let i = 0; i < n; i++) { pos[i*3] = (r()-0.5)*60; pos[i*3+1] = r()*16 - 4; pos[i*3+2] = 12 - r()*90; }
+  const grid = new THREE.GridHelper(240, 240, 0x0b5560, 0x06262b); grid.position.set(0, -6.5, -40); scene.add(grid);
+  const n = 600, pos = new Float32Array(n*3);
+  for (let i = 0; i < n; i++) { pos[i*3] = (r()-0.5)*60; pos[i*3+1] = r()*16 - 4; pos[i*3+2] = 12 - r()*105; }
   const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   const pts = new THREE.Points(pg, new THREE.PointsMaterial({ color: 0x5ff6ff, size: 0.06, transparent: true, opacity: 0.8 }));
   pts.name = 'dust'; scene.add(pts);
 })();
 
-/* =========================================================
-   5. WORLD = PYTHON-STYLE DICTIONARY  world_data["x,y,z"] = type
-   ========================================================= */
-let world_data = {};       // the dictionary the game is built from
-let meshes = {};           // key -> Mesh (dynamic blocks)
-let targets = [];          // raycast targets
-let popped = new Set();    // keys removed during play (shown in the probe)
-let worldGroup = null, portal = null;
-const anims = [];
+/* ---------- firewall (closing wall) ---------- */
+const fwTex = canvasTex((g, w, h) => {
+  g.fillStyle = 'rgba(255,47,184,0.25)'; g.fillRect(0,0,w,h);
+  g.strokeStyle = 'rgba(255,120,220,0.9)'; g.lineWidth = 2;
+  for (let x = 0; x <= w; x += 32) { g.beginPath(); g.moveTo(x,0); g.lineTo(x,h); g.stroke(); }
+  for (let y = 0; y <= h; y += 32) { g.beginPath(); g.moveTo(0,y); g.lineTo(w,y); g.stroke(); }
+  g.fillStyle = '#ffffff'; g.font = 'bold 30px monospace'; g.textAlign = 'center';
+  g.fillText('FIREWALL', w/2, h*0.35); g.fillText('▲ ▲ ▲', w/2, h*0.7);
+}, 256, 256);
+fwTex.wrapS = fwTex.wrapT = THREE.RepeatWrapping; fwTex.repeat.set(2, 1.5);
+const firewall = new THREE.Group();
+const fwMat = new THREE.MeshBasicMaterial({ map: fwTex, transparent: true, opacity: 0.75, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending });
+const fwPlane = new THREE.Mesh(new THREE.PlaneGeometry(7, 5), fwMat); fwPlane.position.y = 2;
+const fwEdge = new THREE.Mesh(new THREE.BoxGeometry(7, 0.12, 0.12), new THREE.MeshBasicMaterial({ color: 0xff7be3 })); fwEdge.position.y = 4.5;
+const fwEdge2 = fwEdge.clone(); fwEdge2.position.y = 0.55;
+const fwLight = new THREE.PointLight(0xff2fb8, 2, 7); fwLight.position.y = 2;
+firewall.add(fwPlane, fwEdge, fwEdge2, fwLight); firewall.visible = false; scene.add(firewall);
 
+/* =========================================================
+   4. WORLD = DICTIONARY   world_data["x,y,z"] = "BlockType"
+   ========================================================= */
+let world_data = {}, meshes = {}, targets = [], popped = new Set(), worldGroup = null, portal = null;
+const anims = [];
 const K = (x,y,z) => x + ',' + y + ',' + z;
+const PORTAL_Z = -78;
+// zig-zag diagonal bridge over the chasm (x, y, z). y = 1 is a raised tile you must jump up onto.
+const BRIDGE = [[-2,0,-18],[-1,0,-18],[0,0,-20],[1,0,-20],[2,1,-22],[2,1,-23],[0,0,-25],[1,0,-25],[-2,0,-27],[-1,0,-27]];
 
 function addDynamic(x, y, z, type, mat){
-  const k = K(x,y,z);
-  if (meshes[k]) removeMesh(k);
+  const k = K(x,y,z); if (meshes[k]) removeMesh(k);
   world_data[k] = type; popped.delete(k);
-  const mesh = new THREE.Mesh(BOX, mat);
-  mesh.position.set(x, y, z); mesh.userData.key = k;
-  worldGroup.add(mesh); meshes[k] = mesh; targets.push(mesh);
-  return mesh;
+  const mesh = new THREE.Mesh(BOX, mat); mesh.position.set(x, y, z); mesh.userData.key = k;
+  worldGroup.add(mesh); meshes[k] = mesh; targets.push(mesh); return mesh;
 }
-function removeMesh(k){
-  const m = meshes[k]; if (!m) return;
-  worldGroup.remove(m); delete meshes[k];
-  const i = targets.indexOf(m); if (i >= 0) targets.splice(i, 1);
-}
+function removeMesh(k){ const m = meshes[k]; if (!m) return; worldGroup.remove(m); delete meshes[k]; untarget(m); }
+function untarget(m){ const i = targets.indexOf(m); if (i >= 0) targets.splice(i, 1); }
 function popKey(k){ if (k in world_data) { delete world_data[k]; popped.add(k); } }
 
 function buildWorld(){
@@ -523,31 +618,38 @@ function buildWorld(){
   worldGroup = new THREE.Group(); scene.add(worldGroup);
   world_data = {}; meshes = {}; targets = []; popped = new Set(); anims.length = 0;
   const r = rng(2024);
-
-  // --- dynamic / interactive blocks first, so static cells skip their keys
-  for (let x = -2; x <= 2; x++) for (let y = 1; y <= 3; y++)
-    addDynamic(x, y, -12, 'KeyWall', (x===0 && y===2) ? MAT.gateLock : MAT.gate);
+  // Chamber 1: a jump-tutorial hurdle and the KeyWall gate
+  for (let x = -2; x <= 2; x++) addDynamic(x, 1, -6, 'Hurdle', MAT.hurdle);
+  for (let x = -2; x <= 2; x++) for (let y = 1; y <= 3; y++) addDynamic(x, y, -12, 'KeyWall', (x===0 && y===2) ? MAT.gateLock : MAT.gate);
+  // Chamber 2: registry node beside a chasm (z -17..-28)
   addDynamic(-3, 2, -15, 'RegistryNode', MAT.node.clone());
-  addDynamic( 3, 2, -33, 'TraversalNode', MAT.node.clone());
-  addDynamic(-3, 2, -47, 'FlushNode', MAT.node.clone());
-  [[-2,-31],[2,-31],[-2,-40],[2,-40]].forEach(([x,z]) => { for (let y = 1; y <= 3; y++) addDynamic(x, y, z, 'Pillar', MAT.pillarOff); });
-  for (let x = -2; x <= 2; x++) for (let y = 1; y <= 3; y++) addDynamic(x, y, -43, 'VaultDoor', MAT.vault);
-  for (let z = -55; z <= -52; z++) for (let x = -2; x <= 2; x++) for (let y = 1; y <= 3; y++) {
-    const full = (z === -53 || z === -54);
-    if (full || r() < 0.5) addDynamic(x, y, z, 'Garbage', MAT.garbage);
-  }
-  for (let y = 1; y <= 3; y++) { addDynamic(-2, y, -60, 'PortalFrame', MAT.frame); addDynamic(2, y, -60, 'PortalFrame', MAT.frame); }
-  for (let x = -2; x <= 2; x++) addDynamic(x, 4, -60, 'PortalFrame', MAT.frame);
+  // Chamber 3: hurdles plus a mutex gate
+  for (let x = -2; x <= 2; x++) addDynamic(x, 1, -34, 'Hurdle', MAT.hurdle);
+  for (let x = -2; x <= 2; x++) { addDynamic(x, 1, -38, 'Hurdle', MAT.hurdle); if (x <= -1) addDynamic(x, 2, -38, 'Hurdle', MAT.hurdle); }
+  addDynamic(3, 2, -42, 'MutationNode', MAT.node.clone());
+  for (let x = -2; x <= 2; x++) for (let y = 1; y <= 3; y++) addDynamic(x, y, -45, 'MutexGate', MAT.mutex);
+  // Chamber 4: pit with stepping stones, pillars and a vault
+  addDynamic(-1, 0, -51, 'DataStone', MAT.stone); addDynamic(0, 0, -51, 'DataStone', MAT.stone);
+  [[-2,-48],[2,-48],[-2,-58],[2,-58]].forEach(([x,z]) => { for (let y = 1; y <= 3; y++) addDynamic(x, y, z, 'Pillar', MAT.pillarOff); });
+  addDynamic(3, 2, -55, 'TraversalNode', MAT.node.clone());
+  for (let x = -2; x <= 2; x++) for (let y = 1; y <= 3; y++) addDynamic(x, y, -61, 'VaultDoor', MAT.vault);
+  // Chamber 5: garbage sector and the portal
+  addDynamic(-3, 2, -65, 'FlushNode', MAT.node.clone());
+  for (let z = -73; z <= -70; z++) for (let x = -2; x <= 2; x++) for (let y = 1; y <= 3; y++)
+    if (z === -71 || z === -72 || r() < 0.5) addDynamic(x, y, z, 'Garbage', MAT.garbage);
+  for (let y = 1; y <= 3; y++) { addDynamic(-2, y, PORTAL_Z, 'PortalFrame', MAT.frame); addDynamic(2, y, PORTAL_Z, 'PortalFrame', MAT.frame); }
+  for (let x = -2; x <= 2; x++) addDynamic(x, 4, PORTAL_Z, 'PortalFrame', MAT.frame);
 
-  // --- static cells (floor + walls) as instanced meshes
+  // static floor + walls (instanced)
   const groups = { floor: [], wall: [], accent: [] };
   const put = (x,y,z,type,g) => { const k = K(x,y,z); if (k in world_data) return; world_data[k] = type; groups[g].push([x,y,z,k]); };
-  for (let z = 2; z >= -60; z--) for (let x = -3; x <= 3; x++) {
-    const chasm = z <= -17 && z >= -24 && Math.abs(x) <= 2;
-    if (!chasm) put(x, 0, z, 'Floor', 'floor');
+  for (let z = 2; z >= PORTAL_Z; z--) for (let x = -3; x <= 3; x++) {
+    const inner = Math.abs(x) <= 2;
+    const chasm = inner && z <= -17 && z >= -28, pit = inner && z <= -50 && z >= -52;
+    if (!chasm && !pit) put(x, 0, z, 'Floor', 'floor');
   }
-  for (let z = 3; z >= -61; z--) for (let y = 1; y <= 3; y++) for (const x of [-3, 3]) put(x, y, z, 'Wall', r() < 0.09 ? 'accent' : 'wall');
-  for (const z of [3, -61]) for (let x = -2; x <= 2; x++) for (let y = 1; y <= 3; y++) put(x, y, z, 'Wall', r() < 0.12 ? 'accent' : 'wall');
+  for (let z = 3; z >= PORTAL_Z - 1; z--) for (let y = 1; y <= 3; y++) for (const x of [-3, 3]) put(x, y, z, 'Wall', r() < 0.09 ? 'accent' : 'wall');
+  for (const z of [3, PORTAL_Z - 1]) for (let x = -2; x <= 2; x++) for (let y = 1; y <= 3; y++) put(x, y, z, 'Wall', r() < 0.12 ? 'accent' : 'wall');
   const m = new THREE.Matrix4();
   for (const g in groups) {
     const list = groups[g]; if (!list.length) continue;
@@ -557,25 +659,23 @@ function buildWorld(){
     worldGroup.add(im); targets.push(im);
   }
 
-  // --- extraction portal (non-solid dictionary entry)
-  world_data[K(0,2,-60)] = 'Portal';
-  portal = new THREE.Group(); portal.position.set(0, 2, -60.35);
+  // portal
+  world_data[K(0,2,PORTAL_Z)] = 'Portal';
+  portal = new THREE.Group(); portal.position.set(0, 2, PORTAL_Z - 0.35);
   const ringMat = new THREE.MeshBasicMaterial({ color: 0x552244 });
   const ring = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.09, 12, 64), ringMat);
   const discTex = canvasTex((g,s) => { const gr = g.createRadialGradient(s/2,s/2,4,s/2,s/2,s/2); gr.addColorStop(0,'#ffffff'); gr.addColorStop(0.25,'#19e6f2'); gr.addColorStop(0.6,'#ff2fb8'); gr.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0,0,s,s); g.strokeStyle='rgba(255,255,255,0.5)'; g.lineWidth=3; for(let i=0;i<6;i++){ g.beginPath(); g.arc(s/2,s/2,10+i*9,i,i+3.5); g.stroke(); } });
   const discMat = new THREE.MeshBasicMaterial({ map: discTex, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
-  const disc = new THREE.Mesh(new THREE.CircleGeometry(1.25, 48), discMat);
-  disc.userData.key = K(0,2,-60);
+  const disc = new THREE.Mesh(new THREE.CircleGeometry(1.25, 48), discMat); disc.userData.key = K(0,2,PORTAL_Z);
   const light = new THREE.PointLight(0xff2fb8, 0, 9);
   portal.add(ring, disc, light);
   portal.userData = { ring, ringMat, disc, discMat, light, active: false };
   worldGroup.add(portal); targets.push(disc);
 }
-
 const solidAt = (x,y,z) => { const t = world_data[K(x,y,z)]; return !!t && !NONSOLID.has(t); };
 
 /* =========================================================
-   6. ANIMATION + WIN EFFECTS
+   5. ANIMATIONS + CHAMBER EFFECTS
    ========================================================= */
 function tween(dur, delay, fn, done){ anims.push({ t: -(delay||0), dur, fn, done }); }
 function stepAnims(dt){
@@ -587,21 +687,15 @@ function stepAnims(dt){
 }
 const easeOutBack = p => { const c = 1.70158; return 1 + (c+1)*Math.pow(p-1,3) + c*Math.pow(p-1,2); };
 const easeInOut = p => p < 0.5 ? 2*p*p : 1 - Math.pow(-2*p+2, 2)/2;
-
-function keysOf(type){ return Object.keys(world_data).filter(k => world_data[k] === type); }
+const keysOf = type => Object.keys(world_data).filter(k => world_data[k] === type);
 
 function dissolve(k, delay, spin){
-  const m = meshes[k]; popKey(k); if (!m) return;
-  const i = targets.indexOf(m); if (i >= 0) targets.splice(i, 1);
+  const m = meshes[k]; popKey(k); if (!m) return; untarget(m);
   m.material = m.material.clone(); m.material.transparent = true;
   const y0 = m.position.y, rx = (Math.random()-0.5)*4, ry = (Math.random()-0.5)*4;
-  tween(spin ? 0.9 : 0.7, delay, p => {
-    const s = Math.max(0.001, 1 - p); m.scale.setScalar(s);
-    m.material.opacity = 1 - p; m.position.y = y0 + p * (spin ? 0.9 : 0.2);
-    if (spin) { m.rotation.x = rx*p; m.rotation.y = ry*p; }
-  }, () => { worldGroup.remove(m); delete meshes[k]; });
+  tween(spin ? 0.9 : 0.7, delay, p => { m.scale.setScalar(Math.max(0.001, 1 - p)); m.material.opacity = 1 - p; m.position.y = y0 + p * (spin ? 0.9 : 0.2); if (spin) { m.rotation.x = rx*p; m.rotation.y = ry*p; } },
+    () => { worldGroup.remove(m); delete meshes[k]; });
 }
-
 function markNodeDone(type){ keysOf(type).forEach(k => { if (meshes[k]) meshes[k].material = MAT.nodeDone; }); }
 
 function runEffect(i, instant){
@@ -609,55 +703,53 @@ function runEffect(i, instant){
     keysOf('KeyWall').forEach((k, j) => { if (instant) { popKey(k); removeMesh(k); } else dissolve(k, j * 0.04, false); });
   } else if (i === 1) {
     markNodeDone('RegistryNode');
-    let n = 0;
-    for (let z = -17; z >= -24; z--) for (let x = -1; x <= 1; x++) {
-      const m = addDynamic(x, 0, z, 'NeonBridge', MAT.bridge);
-      if (!instant) { m.scale.setScalar(0.001); tween(0.45, n * 0.05, p => m.scale.setScalar(Math.max(0.001, easeOutBack(p)))); }
-      n++;
-    }
+    BRIDGE.forEach(([x,y,z], n) => {
+      const m = addDynamic(x, y, z, 'NeonBridge', MAT.bridge);
+      if (!instant) { m.scale.setScalar(0.001); tween(0.45, n * 0.12, p => m.scale.setScalar(Math.max(0.001, easeOutBack(p)))); }
+    });
   } else if (i === 2) {
+    markNodeDone('MutationNode');
+    keysOf('MutexGate').forEach((k, j) => {
+      world_data[k] = 'Passage';                       // values updated -> non-solid
+      const m = meshes[k]; if (!m) return; untarget(m);
+      if (instant) { worldGroup.remove(m); delete meshes[k]; return; }
+      const y0 = m.position.y;
+      tween(0.9, 0.3 + j * 0.05, p => { m.position.y = y0 - 3.2 * easeInOut(p); m.rotation.y = p * Math.PI; }, () => { worldGroup.remove(m); delete meshes[k]; });
+    });
+  } else if (i === 3) {
     markNodeDone('TraversalNode');
-    const pillarSets = [[-2,-31],[2,-31],[-2,-40],[2,-40]];
-    pillarSets.forEach(([x,z], j) => {
+    [[-2,-48],[2,-48],[-2,-58],[2,-58]].forEach(([x,z], j) => {
       const go = () => { for (let y = 1; y <= 3; y++) { const k = K(x,y,z); world_data[k] = 'PillarOnline'; if (meshes[k]) meshes[k].material = MAT.pillarOn; } };
       if (instant) go(); else tween(0.01, j * 0.25, () => {}, go);
     });
     keysOf('VaultDoor').forEach(k => {
-      popKey(k);
-      if (instant) { removeMesh(k); return; }
-      const m = meshes[k]; const y0 = m.position.y;
-      const ti = targets.indexOf(m); if (ti >= 0) targets.splice(ti, 1);
+      popKey(k); if (instant) { removeMesh(k); return; }
+      const m = meshes[k], y0 = m.position.y; untarget(m);
       tween(1.8, 1.1, p => { m.position.y = y0 + 4.2 * easeInOut(p); }, () => { worldGroup.remove(m); delete meshes[k]; });
     });
-  } else if (i === 3) {
+  } else if (i === 4) {
     markNodeDone('FlushNode');
     keysOf('Garbage').forEach(k => { if (instant) { popKey(k); removeMesh(k); } else dissolve(k, Math.random() * 1.4, true); });
-    activatePortal(instant);
+    const u = portal.userData; u.active = true;
+    const go = () => { u.ringMat.color.set(0xff2fb8); u.discMat.opacity = 0.95; u.light.intensity = 2.2; };
+    if (instant) go(); else tween(1.2, 1.2, p => { u.discMat.opacity = 0.15 + 0.8*p; u.light.intensity = 2.2*p; u.ringMat.color.setRGB(0.33 + 0.67*p, 0.13 + 0.05*p, 0.27 + 0.45*p); }, go);
   }
-}
-function activatePortal(instant){
-  const u = portal.userData; u.active = true;
-  const go = () => { u.ringMat.color.set(0xff2fb8); u.discMat.opacity = 0.95; u.light.intensity = 2.2; };
-  if (instant) go(); else tween(1.2, 1.2, p => { u.discMat.opacity = 0.15 + 0.8*p; u.light.intensity = 2.2*p; u.ringMat.color.setRGB(0.33 + 0.67*p, 0.13 + 0.05*p, 0.27 + 0.45*p); }, go);
 }
 
 /* =========================================================
-   7. GAME STATE, PLAYER, INPUT
+   6. STATE, PLAYER PHYSICS (walk, jump, gravity), FIREWALL
    ========================================================= */
-const state = { mode: 'menu', level: 0, time: 0, mistakes: 0, name: 'PLAYER', hover: null, hoverDist: 99, answered: false, saveTimer: 0 };
-const player = { x: 0, f: 0.5, z: 0, vy: 0, yaw: 0, pitch: 0, bob: 0 };
+const state = { mode: 'menu', level: 0, time: 0, mistakes: 0, name: 'PLAYER', hover: null, hoverDist: 99, answered: false, saveTimer: 0, q: null };
+const player = { x: 0, f: 0.5, z: 0, vy: 0, yaw: 0, pitch: 0, bob: 0, coyote: 0, jumpBuf: 0 };
+const fw = { active: false, z: 0, speed: 0, gap0: 7 };
 const keys = { f:false, b:false, l:false, r:false, sprint:false };
 const isTouch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
 let locked = false, everLocked = false, fallbackLook = isTouch;
 
 function clearKeys(){ keys.f = keys.b = keys.l = keys.r = keys.sprint = false; document.querySelectorAll('#dpad button').forEach(b => b.classList.remove('on')); }
-
 function lock(){
   if (fallbackLook) return;
-  try {
-    const r = canvas.requestPointerLock();
-    if (r && r.catch) r.catch(() => { if (!everLocked) enableFallback(); });
-  } catch(e) { enableFallback(); }
+  try { const r = canvas.requestPointerLock(); if (r && r.catch) r.catch(() => { if (!everLocked) enableFallback(); }); } catch(e) { enableFallback(); }
 }
 function enableFallback(){ if (fallbackLook) return; fallbackLook = true; toast('Pointer lock unavailable here: click and drag to look, click to scan.'); }
 document.addEventListener('pointerlockchange', () => {
@@ -667,78 +759,121 @@ document.addEventListener('pointerlockchange', () => {
 });
 document.addEventListener('pointerlockerror', () => { if (!everLocked) enableFallback(); });
 
-function spawn(){
-  const c = CHECKPOINTS[state.level];
-  player.x = c.x; player.z = c.z; player.f = 0.5; player.vy = 0; player.yaw = 0; player.pitch = 0;
-}
+function spawn(){ const c = CHECKPOINTS[state.level]; Object.assign(player, { x: c.x, z: c.z, f: 0.5, vy: 0, yaw: 0, pitch: 0, coyote: 0, jumpBuf: 0 }); }
 
+function bodyCells(f){ return [Math.ceil(f - 0.5 + 0.02), Math.floor(f + PLAYER_H + 0.5 - 0.02)]; }
 function blocked(nx, nz, f){
-  const yLo = Math.round(f + 0.5), yHi = Math.round(f + 1.5), R = 0.3;
-  for (const dx of [-R, R]) for (const dz of [-R, R]) {
+  const [a, b] = bodyCells(f);
+  for (const dx of [-PLAYER_R, PLAYER_R]) for (const dz of [-PLAYER_R, PLAYER_R]) {
     const cx = Math.round(nx + dx), cz = Math.round(nz + dz);
-    for (let y = yLo; y <= yHi; y++) if (solidAt(cx, y, cz)) return true;
+    for (let y = a; y <= b; y++) if (solidAt(cx, y, cz)) return true;
   }
   return false;
 }
-function hasFloor(x, z){
-  for (const dx of [-0.25, 0.25]) for (const dz of [-0.25, 0.25]) if (solidAt(Math.round(x+dx), 0, Math.round(z+dz))) return true;
+function support(x, z, y){
+  for (const dx of [-0.25, 0.25]) for (const dz of [-0.25, 0.25]) if (solidAt(Math.round(x+dx), y, Math.round(z+dz))) return true;
   return false;
 }
+
+function startFirewall(){
+  if (fw.active) return;
+  fw.active = true; fw.gap0 = 7; fw.z = player.z + 0.4 + fw.gap0; fw.speed = fw.gap0 / FIREWALL_TIME[state.level];
+  firewall.visible = true; firewall.position.set(0, 0, fw.z); fwMat.opacity = 0;
+  tween(0.5, 0, p => { fwMat.opacity = 0.75 * p; });
+}
+function stopFirewall(animated){
+  if (!fw.active) return; fw.active = false;
+  if (animated) tween(0.8, 0, p => { fwMat.opacity = 0.75 * (1 - p); firewall.position.y = -p * 4; }, () => { firewall.visible = false; firewall.position.y = 0; });
+  else firewall.visible = false;
+  $('danger').style.opacity = 0;
+}
+function breach(reason){
+  state.mistakes++;
+  flash('FIREWALL BREACH', false);
+  toast(`${reason} +${PENALTY}s penalty. Rebooting at checkpoint.`);
+  respawn();
+}
+function respawn(){ if (state.mode === 'terminal') closeTerminal(false); stopFirewall(false); spawn(); saveProgress(); }
 
 function updatePlayer(dt){
   let mf = (keys.f?1:0) - (keys.b?1:0), mr = (keys.r?1:0) - (keys.l?1:0);
-  if (state.mode !== 'play') { mf = 0; mr = 0; }
+  const canAct = state.mode === 'play';
+  if (!canAct) { mf = 0; mr = 0; }
   const len = Math.hypot(mf, mr) || 1, speed = keys.sprint ? 6.8 : 4.3;
   const sy = Math.sin(player.yaw), cy = Math.cos(player.yaw);
-  const dx = ((-sy) * mf + cy * mr) / len * speed * dt;
-  const dz = ((-cy) * mf + (-sy) * mr) / len * speed * dt;
+  const dx = ((-sy) * mf + cy * mr) / len * speed * dt, dz = ((-cy) * mf + (-sy) * mr) / len * speed * dt;
   if (!blocked(player.x + dx, player.z, player.f)) player.x += dx;
   if (!blocked(player.x, player.z + dz, player.f)) player.z += dz;
 
-  const grounded = player.f > 0.42 && hasFloor(player.x, player.z);
-  if (grounded && player.vy <= 0) { player.f = 0.5; player.vy = 0; }
-  else { player.vy -= 24 * dt; player.f += player.vy * dt; }
-  if (player.f < -16) {
-    const k = K(Math.round(player.x), 0, Math.round(player.z));
-    toast(`KeyError: '${k}' (no floor at that key). Respawned at checkpoint.`);
-    spawn();
+  // vertical: standing / jumping / falling
+  const below = Math.round(player.f - 1);
+  const standing = player.vy <= 0 && Math.abs(player.f - (below + 0.5)) < 0.03 && support(player.x, player.z, below);
+  if (standing) { player.f = below + 0.5; player.vy = 0; player.coyote = 0.12; }
+  else player.coyote -= dt;
+  player.jumpBuf -= dt;
+  if (canAct && player.jumpBuf > 0 && player.coyote > 0) { player.vy = JUMP_V; player.coyote = 0; player.jumpBuf = 0; }
+  if (!standing || player.vy > 0) {
+    player.vy = Math.max(-18, player.vy - GRAVITY * dt);
+    const nf = player.f + player.vy * dt;
+    if (player.vy <= 0) {
+      const cyl = Math.round(player.f - 1), top = cyl + 0.5;
+      if (nf <= top && player.f >= top - 0.06 && support(player.x, player.z, cyl)) { player.f = top; player.vy = 0; }
+      else player.f = nf;
+    } else {
+      const head = Math.floor(nf + PLAYER_H + 0.5 - 0.02);
+      let bump = false;
+      for (const ox of [-PLAYER_R, PLAYER_R]) for (const oz of [-PLAYER_R, PLAYER_R]) if (solidAt(Math.round(player.x+ox), head, Math.round(player.z+oz))) bump = true;
+      if (bump) player.vy = 0; else player.f = nf;
+    }
   }
-  const moving = (mf || mr) && grounded;
+  if (state.mode === 'terminal' && player.f < 0.2) closeTerminal(false);
+
+  // firewall pushes from behind (+z) toward -z
+  if (fw.active) {
+    fw.z -= fw.speed * dt; firewall.position.z = fw.z;
+    const limit = fw.z - 0.4;
+    $('danger').style.opacity = Math.max(0, Math.min(0.9, 1 - (limit - player.z) / 3));
+    if (player.z > limit) {
+      if (state.mode === 'terminal') { closeTerminal(false); toast('FIREWALL CONTACT! You are being pushed.'); }
+      if (blocked(player.x, limit, player.f)) { breach('Crushed against a block by the firewall.'); return; }
+      player.z = limit;
+    }
+  }
+  if (player.f < -14) {
+    if (fw.active) breach('Firewall shoved you into the void.');
+    else { toast(`KeyError: '${K(Math.round(player.x), 0, Math.round(player.z))}' (no floor at that key). Respawned.`); respawn(); }
+    return;
+  }
+  const moving = (mf || mr) && standing;
   player.bob += moving ? dt * (keys.sprint ? 13 : 9) : 0;
   camera.position.set(player.x, player.f + 1.6 + (moving ? Math.sin(player.bob) * 0.045 : 0), player.z);
   camera.rotation.set(player.pitch, player.yaw, 0);
 
-  // win condition: walk into the active portal
-  if (state.level >= 4 && portal.userData.active && state.mode === 'play' && player.z < -58.7 && Math.abs(player.x) < 1.6) finishGame();
+  if (state.level >= NUM_LEVELS && portal.userData.active && state.mode === 'play' && player.z < PORTAL_Z + 1.3 && Math.abs(player.x) < 1.6) finishGame();
 }
+function look(dx, dy, sens){ player.yaw -= dx * sens; player.pitch = Math.max(-1.45, Math.min(1.45, player.pitch - dy * sens)); }
+function jump(){ player.jumpBuf = 0.15; }
 
-function look(dx, dy, sens){
-  player.yaw -= dx * sens; player.pitch -= dy * sens;
-  player.pitch = Math.max(-1.45, Math.min(1.45, player.pitch));
-}
-
-// keyboard
+/* ---------- input ---------- */
 const KEYMAP = { KeyW:'f', ArrowUp:'f', KeyS:'b', ArrowDown:'b', KeyA:'l', ArrowLeft:'l', KeyD:'r', ArrowRight:'r' };
 window.addEventListener('keydown', e => {
   if (e.target && e.target.tagName === 'INPUT') { if (e.code === 'Enter') $('btnNew').click(); return; }
+  if (e.code === 'Escape') closeSheets();
   if (KEYMAP[e.code]) { keys[KEYMAP[e.code]] = true; if (e.code.startsWith('Arrow')) e.preventDefault(); }
   if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') keys.sprint = true;
-  if (state.mode === 'play' && (e.code === 'KeyE' || e.code === 'KeyF' || e.code === 'Space')) { e.preventDefault(); interact(); }
+  if (e.code === 'Space') { e.preventDefault(); if (state.mode === 'play') jump(); }
+  if (state.mode === 'play' && (e.code === 'KeyE' || e.code === 'KeyF')) interact();
   if (state.mode === 'terminal') {
     const n = parseInt(e.key, 10);
     if (n >= 1 && n <= 4 && !state.answered) answer(n - 1);
     if (e.code === 'Enter' && state.answered) closeTerminal(true);
     if (e.code === 'KeyQ' && !state.answered) closeTerminal(true);
   }
-  if (e.code === 'KeyP') { if (state.mode === 'play') { setMode('paused'); if (document.exitPointerLock) document.exitPointerLock(); } else if (state.mode === 'paused') resumeFromPause(); }
+  if (e.code === 'KeyP') { if (state.mode === 'play') pauseGame(); else if (state.mode === 'paused') resumeFromPause(); }
 });
-window.addEventListener('keyup', e => {
-  if (KEYMAP[e.code]) keys[KEYMAP[e.code]] = false;
-  if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') keys.sprint = false;
-});
+window.addEventListener('keyup', e => { if (KEYMAP[e.code]) keys[KEYMAP[e.code]] = false; if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') keys.sprint = false; });
 window.addEventListener('blur', clearKeys);
 
-// mouse
 let drag = null;
 canvas.addEventListener('mousedown', e => {
   if (state.mode !== 'play' || isTouch) return;
@@ -752,48 +887,29 @@ window.addEventListener('mousemove', e => {
   else if (drag) { const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.moved += Math.abs(dx) + Math.abs(dy); drag.x = e.clientX; drag.y = e.clientY; look(dx, dy, 0.004); }
 });
 window.addEventListener('mouseup', () => { if (drag && drag.moved < 6 && state.mode === 'play') interact(); drag = null; });
-
-// touch look
 let touchLook = null;
-canvas.addEventListener('touchstart', e => {
-  if (state.mode !== 'play') return;
-  const t = e.changedTouches[0]; touchLook = { id: t.identifier, x: t.clientX, y: t.clientY, moved: 0, t0: performance.now() };
-}, { passive: true });
+canvas.addEventListener('touchstart', e => { if (state.mode !== 'play') return; const t = e.changedTouches[0]; touchLook = { id: t.identifier, x: t.clientX, y: t.clientY, moved: 0, t0: performance.now() }; }, { passive: true });
 canvas.addEventListener('touchmove', e => {
   if (!touchLook) return;
-  for (const t of e.changedTouches) if (t.identifier === touchLook.id) {
-    const dx = t.clientX - touchLook.x, dy = t.clientY - touchLook.y;
-    touchLook.moved += Math.abs(dx) + Math.abs(dy); touchLook.x = t.clientX; touchLook.y = t.clientY;
-    look(dx, dy, 0.0055);
-  }
+  for (const t of e.changedTouches) if (t.identifier === touchLook.id) { const dx = t.clientX - touchLook.x, dy = t.clientY - touchLook.y; touchLook.moved += Math.abs(dx) + Math.abs(dy); touchLook.x = t.clientX; touchLook.y = t.clientY; look(dx, dy, 0.0055); }
 }, { passive: true });
-canvas.addEventListener('touchend', () => {
-  if (touchLook && touchLook.moved < 8 && performance.now() - touchLook.t0 < 300 && state.mode === 'play') interact();
-  touchLook = null;
-});
-
-// d-pad
+canvas.addEventListener('touchend', () => { if (touchLook && touchLook.moved < 8 && performance.now() - touchLook.t0 < 300 && state.mode === 'play') interact(); touchLook = null; });
 document.querySelectorAll('#dpad button[data-k]').forEach(b => {
   const k = b.dataset.k;
-  const on = e => { e.preventDefault(); keys[k] = true; b.classList.add('on'); };
-  const off = () => { keys[k] = false; b.classList.remove('on'); };
-  b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off);
-  b.addEventListener('pointerleave', off); b.addEventListener('pointercancel', off);
+  const on = e => { e.preventDefault(); b.classList.add('on'); if (k === 'jump') { if (state.mode === 'play') jump(); } else keys[k] = true; };
+  const off = () => { if (k !== 'jump') keys[k] = false; b.classList.remove('on'); };
+  b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointerleave', off); b.addEventListener('pointercancel', off);
 });
 $('scanBtn').addEventListener('click', () => { if (state.mode === 'play') interact(); });
-$('enterBtn').addEventListener('click', () => {
-  if (state.mode === 'terminal' && state.answered) closeTerminal(true);
-  else if (state.mode === 'play') interact();
-});
-$('cubeBtn').addEventListener('click', () => { if (state.mode === 'play' || state.mode === 'terminal') { if (state.mode === 'terminal') closeTerminal(false); setMode('paused'); if (document.exitPointerLock) document.exitPointerLock(); } });
+$('enterBtn').addEventListener('click', () => { if (state.mode === 'terminal' && state.answered) closeTerminal(true); else if (state.mode === 'play') interact(); });
+$('cubeBtn').addEventListener('click', () => { if (state.mode === 'terminal') closeTerminal(false); if (state.mode === 'play') pauseGame(); });
 
 /* =========================================================
-   8. SCANNER PROBE (raycast + live dictionary HUD)
+   7. SCANNER PROBE
    ========================================================= */
 const ray = new THREE.Raycaster(); ray.far = 14;
 const CENTER = new THREE.Vector2(0, 0);
 let lastProbeSig = '';
-
 function scan(){
   ray.setFromCamera(CENTER, camera);
   const hits = ray.intersectObjects(targets, false);
@@ -805,17 +921,11 @@ function scan(){
   }
   state.hover = key; state.hoverDist = dist;
 }
-
-function pyVal(v){ return `"${v}"`; }
 function updateProbe(){
-  const tag = $('hoverTag'), ret = $('reticle');
-  const k = state.hover;
+  const tag = $('hoverTag'), ret = $('reticle'), k = state.hover;
   let rowY, rowZ, centerX, label;
-  if (k) {
-    const [x,y,z] = k.split(',').map(Number); rowY = y; rowZ = z; centerX = x; label = 'TARGET ' + k;
-  } else {
-    rowY = 0; rowZ = Math.round(player.z); centerX = Math.round(player.x); label = 'BENEATH ' + K(centerX, 0, rowZ);
-  }
+  if (k) { const [x,y,z] = k.split(',').map(Number); rowY = y; rowZ = z; centerX = x; label = 'TARGET ' + k; }
+  else { rowY = Math.max(0, Math.round(player.f - 1)); rowZ = Math.round(player.z); centerX = Math.round(player.x); label = 'BENEATH ' + K(centerX, rowY, rowZ); }
   const sig = (k || '-') + '|' + rowY + '|' + rowZ + '|' + Object.keys(world_data).length + '|' + (k ? world_data[k] : '') + '|' + state.level;
   if (sig !== lastProbeSig) {
     lastProbeSig = sig;
@@ -830,40 +940,28 @@ function updateProbe(){
     lines.forEach((l, i) => {
       const comma = i < lines.length - 1 ? ',' : '';
       if (l.gone) html += `<span class="ln gone">  # "${l.kk}": popped</span>`;
-      else {
-        const mag = /Gate|Wall$|Node|Vault|Garbage|Portal|Frame/.test(l.v) && l.v !== 'Wall';
-        html += `<span class="ln${l.hl ? ' hl' : ''}">  <span class="k">"${l.kk}"</span>: <span class="${mag ? 'vm' : 'v'}">${pyVal(l.v)}</span>${comma}</span>`;
-      }
+      else { const mag = l.v !== 'Wall' && l.v !== 'Floor'; html += `<span class="ln${l.hl ? ' hl' : ''}">  <span class="k">"${l.kk}"</span>: <span class="${mag ? 'vm' : 'v'}">"${l.v}"</span>${comma}</span>`; }
     });
     html += '<span class="ln">}</span>';
-    $('probeCode').innerHTML = html;
-    $('probeCoord').textContent = label;
+    $('probeCode').innerHTML = html; $('probeCoord').textContent = label;
     $('probeMeta').innerHTML = `len(world_data) = <b>${Object.keys(world_data).length}</b> &nbsp;·&nbsp; popped = <b>${popped.size}</b>`;
   }
   if (k && state.mode === 'play') {
-    const v = world_data[k];
-    const isNode = v in NODE_LEVEL || v === 'Portal';
+    const v = world_data[k], isNode = v in NODE_LEVEL || v === 'Portal';
     tag.className = isNode ? '' : 'wall';
     tag.innerHTML = `Key: "${k}" | Value: <span class="s">"${v}"</span>`;
     ret.className = (isNode ? 'node' : '') + (state.hoverDist > SCAN_RANGE ? ' far' : '');
-    setCmd(isNode && NODE_LEVEL[v] === state.level ? `world_data.get(<span class="str">"${k}"</span>)  <span style="color:#5f8f96"># press E / click to scan</span>` : `print(world_data[<span class="str">"${k}"</span>])`);
+    setCmd(isNode && NODE_LEVEL[v] === state.level ? `world_data.get(<span class="str">"${k}"</span>)  <span class="cm"># press E / click to scan</span>` : `print(world_data[<span class="str">"${k}"</span>])`);
   } else {
     tag.className = 'hidden'; ret.className = '';
-    if (state.mode === 'play') setCmd('world_data.get(target)  <span style="color:#5f8f96"># aim at a block</span>');
+    if (state.mode === 'play') setCmd('world_data.get(target)  <span class="cm"># aim at a block</span>');
   }
 }
-
 let cmdHold = 0;
-function setCmd(html, hold){
-  if (hold) { cmdHold = hold; $('cmdText').innerHTML = html; return; }
-  if (cmdHold > 0) return;
-  if ($('cmdText').innerHTML !== html) $('cmdText').innerHTML = html;
-}
-
+function setCmd(html, hold){ if (hold) { cmdHold = hold; $('cmdText').innerHTML = html; return; } if (cmdHold > 0) return; if ($('cmdText').innerHTML !== html) $('cmdText').innerHTML = html; }
 let toastTimer = 0;
-function toast(msg, ok){
-  const t = $('toast'); t.textContent = msg; t.className = 'show' + (ok ? ' ok' : ''); toastTimer = 3.2;
-}
+function toast(msg, ok){ const t = $('toast'); t.textContent = msg; t.className = 'show' + (ok ? ' ok' : ''); toastTimer = 3.2; }
+function flash(text, ok){ const f = $('flash'); $('flashText').textContent = text; f.className = ''; void f.offsetWidth; f.className = 'go ' + (ok ? 'ok' : 'bad'); }
 
 function interact(){
   if (state.mode !== 'play') return;
@@ -878,12 +976,12 @@ function interact(){
     else toast(`ACCESS DENIED: resolve chamber ${state.level + 1} first.`);
     return;
   }
-  if (v === 'Portal') { toast(state.level >= 4 ? 'Portal online. Walk into it!' : 'Portal offline: flush the garbage sector first.'); return; }
+  if (v === 'Portal') { toast(state.level >= NUM_LEVELS ? 'Portal online. Walk into it!' : 'Portal offline: flush the garbage sector first.'); return; }
   toast(`>>> world_data["${k}"]  →  '${v}'`, true);
 }
 
 /* =========================================================
-   9. DIAGNOSTIC TERMINAL
+   8. DIAGNOSTIC TERMINAL
    ========================================================= */
 let currentOpts = [];
 function highlight(code){
@@ -896,191 +994,210 @@ function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--) { con
 
 function openTerminal(lv){
   const L = LEVELS[lv];
+  if (!state.q || state.q.lv !== lv) state.q = { lv, item: L.pool[Math.floor(Math.random() * L.pool.length)] };
+  const Q = state.q.item;
   setMode('terminal'); clearKeys(); state.answered = false;
   if (document.exitPointerLock && locked) document.exitPointerLock();
-  currentOpts = shuffle(L.options);
+  currentOpts = shuffle(Q.options);
   const p = $('termPanel');
   p.innerHTML = `
-    <div class="tp-head"><div><div class="tp-level">CHAMBER ${lv + 1} / 4 · DIAGNOSTIC</div><div class="tp-title">${L.title}</div></div>
+    <div class="tp-head"><div><div class="tp-level">CHAMBER ${lv + 1} / ${NUM_LEVELS} · DIAGNOSTIC</div><div class="tp-title">${L.title}</div></div>
     <button class="tp-close" id="tpClose">✕ close [Q]</button></div>
+    <div class="fw" id="fwRow"><span>⚠ FIREWALL</span><div class="fwbar"><i id="fwFill"></i></div><b id="fwSec"></b></div>
     <div class="tp-concept">${L.concept}</div>
-    ${L.code ? `<pre class="code">${highlight(L.code)}</pre>` : ''}
-    <div class="tp-q">${L.question}</div>
+    ${Q.code ? `<pre class="code">${highlight(Q.code)}</pre>` : ''}
+    <div class="tp-q">${Q.question}</div>
     <div class="opts">${currentOpts.map((o, i) => `<button class="opt" data-i="${i}"><span class="n">${i + 1}</span>${esc(o.t)}</button>`).join('')}</div>
-    <div id="feedback"></div>
-    <div id="resumeWrap"></div>`;
+    <div id="feedback"></div><div id="resumeWrap"></div>`;
   p.classList.remove('hidden');
   p.querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => answer(+b.dataset.i)));
   $('tpClose').addEventListener('click', () => closeTerminal(true));
   setCmd(`diagnose(chamber=<span class="num">${lv + 1}</span>)`, 0.01);
+  startFirewall();
 }
-
+function updateFirewallUI(){
+  if (state.mode !== 'terminal' || !$('fwFill')) return;
+  if (!fw.active || state.answered) { $('fwRow').classList.add('hidden'); return; }
+  const gap = Math.max(0, (fw.z - 0.4) - player.z), sec = gap / fw.speed;
+  $('fwFill').style.width = Math.max(0, Math.min(100, gap / fw.gap0 * 100)) + '%';
+  $('fwSec').textContent = sec.toFixed(1) + 's';
+  $('fwRow').classList.toggle('hot', sec < 8);
+}
 function answer(i){
   if (state.answered) return;
   const o = currentOpts[i]; if (!o) return;
-  const btn = document.querySelector(`.opt[data-i="${i}"]`);
-  if (!btn || btn.disabled) return;
-  const fb = $('feedback'), lv = state.level, L = LEVELS[lv];
+  const btn = document.querySelector(`.opt[data-i="${i}"]`); if (!btn || btn.disabled) return;
+  const fb = $('feedback'), lv = state.level, L = LEVELS[lv], Q = state.q.item;
   if (o.ok) {
-    state.answered = true;
-    btn.classList.add('right');
-    document.querySelectorAll('.opt').forEach(b => b.disabled = true);
-    fb.className = 'ok'; fb.innerHTML = '✔ CORRECT. ' + L.explain;
+    state.answered = true; state.q = null;
+    btn.classList.add('right'); document.querySelectorAll('.opt').forEach(b => b.disabled = true);
+    fb.className = 'ok'; fb.innerHTML = '✔ CORRECT. ' + Q.explain;
     $('resumeWrap').innerHTML = `<button class="resume" id="resumeBtn">EXECUTE &amp; RESUME ▶ [Enter]</button>`;
     $('resumeBtn').addEventListener('click', () => closeTerminal(true));
+    stopFirewall(true);
     state.level = lv + 1;
     runEffect(lv, false);
-    saveProgress();
-    updateHUD();
+    flash(state.level >= NUM_LEVELS ? 'PORTAL ONLINE' : `CHAMBER ${lv + 1} UNLOCKED`, true);
+    saveProgress(); updateHUD();
     setCmd(highlight(L.cmd), 5);
   } else {
     state.mistakes++;
     btn.classList.add('wrong'); btn.disabled = true;
-    fb.className = 'err'; fb.innerHTML = `✖ Not quite (+${PENALTY}s penalty). ${esc(o.why)}`;
+    fb.className = 'err'; fb.innerHTML = `✖ Not quite (+${PENALTY}s). ${esc(o.why)}`;
     const p = $('termPanel'); p.classList.remove('shake'); void p.offsetWidth; p.classList.add('shake');
     saveProgress();
   }
 }
-
 function closeTerminal(relock){
-  $('termPanel').classList.add('hidden');
-  state.answered = false;
+  $('termPanel').classList.add('hidden'); state.answered = false;
   if (state.mode === 'terminal') { setMode('play'); if (relock) lock(); }
 }
 
 /* =========================================================
-   10. MODES, HUD, SAVE, FLOW
+   9. MODES, HUD, SAVE, FLOW
    ========================================================= */
 function setMode(m){
   state.mode = m;
   $('pause').classList.toggle('hidden', m !== 'paused');
   if (m === 'paused') {
     clearKeys();
-    $('pauseInfo').innerHTML = `Chamber <b style="color:#fff">${Math.min(state.level + 1, 4)}/4</b> · Time <b style="color:#fff">${fmt(state.time)}</b> · Wrong answers <b style="color:#fff">${state.mistakes}</b>. Progress saved.`;
-    renderBoard($('lbPause'));
-    saveProgress();
+    $('pauseInfo').innerHTML = `Chamber <b style="color:#fff">${Math.min(state.level + 1, NUM_LEVELS)}/${NUM_LEVELS}</b> · Time <b style="color:#fff">${fmt(state.time)}</b> · Penalties <b style="color:#fff">${state.mistakes}</b>. Progress saved.`;
+    renderBoard($('lbPause')); saveProgress();
   }
 }
+function pauseGame(){ setMode('paused'); if (document.exitPointerLock && locked) document.exitPointerLock(); }
 function resumeFromPause(){ setMode('play'); lock(); }
-
 function updateHUD(){
-  $('stLevel').textContent = `CHAMBER ${Math.min(state.level + 1, 4)}/4`;
-  $('stObj').textContent = `OBJECTIVES: ${Math.max(0, 4 - state.level)}`;
+  $('stLevel').textContent = `CHAMBER ${Math.min(state.level + 1, NUM_LEVELS)}/${NUM_LEVELS}`;
+  $('stObj').textContent = `OBJECTIVES: ${Math.max(0, NUM_LEVELS - state.level)}`;
   $('stTime').textContent = `TIME: ${fmt(state.time)}`;
-  $('objective').innerHTML = '<b>OBJECTIVE ›</b> ' + OBJECTIVES[Math.min(state.level, 4)];
+  $('objective').innerHTML = '<b>OBJECTIVE ›</b> ' + OBJECTIVES[Math.min(state.level, NUM_LEVELS)];
 }
-
-function saveProgress(){
-  if (state.mode === 'menu' || state.mode === 'won') return;
-  store.set(SAVE_KEY, { name: state.name, level: state.level, time: state.time, mistakes: state.mistakes, at: Date.now() });
-}
-
+function saveProgress(){ if (state.mode === 'menu' || state.mode === 'won') return; store.set(SAVE_KEY, { name: state.name, level: state.level, time: state.time, mistakes: state.mistakes, at: Date.now() }); }
 function refreshMenu(){
-  const s = store.get(SAVE_KEY, null);
-  const c = $('btnContinue');
-  if (s && typeof s.level === 'number') { c.classList.remove('hidden'); c.textContent = `⟳ CONTINUE · CHAMBER ${Math.min(s.level + 1, 4)} · ${fmt(s.time)}`; }
+  const s = store.get(SAVE_KEY, null), c = $('btnContinue');
+  if (s && typeof s.level === 'number') { c.classList.remove('hidden'); c.textContent = `⟳ CONTINUE · ${esc(s.name || '')} · CHAMBER ${Math.min(s.level + 1, NUM_LEVELS)} · ${fmt(s.time)}`; }
   else c.classList.add('hidden');
-  renderBoard($('lbMenu'));
 }
-
 function startGame(save){
   const nm = ($('playerName').value || '').trim().toUpperCase() || (save && save.name) || 'PLAYER';
   state.name = nm.slice(0, 14); store.set(NAME_KEY, state.name);
-  buildWorld();
-  state.level = save ? Math.max(0, Math.min(4, save.level | 0)) : 0;
-  state.time = save ? +save.time || 0 : 0;
-  state.mistakes = save ? save.mistakes | 0 : 0;
+  buildWorld(); stopFirewall(false);
+  state.level = save ? Math.max(0, Math.min(NUM_LEVELS, save.level | 0)) : 0;
+  state.time = save ? +save.time || 0 : 0; state.mistakes = save ? save.mistakes | 0 : 0; state.q = null;
   for (let i = 0; i < state.level; i++) runEffect(i, true);
   spawn(); lastProbeSig = ''; cmdHold = 0;
-  $('menu').classList.add('hidden'); $('win').classList.add('hidden'); $('pause').classList.add('hidden');
-  $('termPanel').classList.add('hidden');
-  $('hud').classList.remove('hidden');
+  ['menu','win','pause','sheetLb','sheetHelp'].forEach(id => $(id).classList.add('hidden'));
+  $('termPanel').classList.add('hidden'); $('hud').classList.remove('hidden');
   setMode('play'); updateHUD(); saveProgress();
-  toast(save ? `Progress restored, ${state.name}. Chamber ${Math.min(state.level + 1, 4)}.` : `Welcome, ${state.name}. ${isTouch ? 'Drag to look.' : 'Click the screen to lock the mouse.'}`, true);
+  toast(save ? `Progress restored, ${state.name}. Chamber ${Math.min(state.level + 1, NUM_LEVELS)}.` : `Welcome, ${state.name}. ${isTouch ? 'Drag to look.' : 'Click the screen to lock the mouse.'}`, true);
   lock();
 }
-
 function toTitle(){
-  saveProgress();
-  if (document.exitPointerLock && locked) document.exitPointerLock();
-  state.mode = 'menu';
-  $('pause').classList.add('hidden'); $('win').classList.add('hidden'); $('hud').classList.add('hidden');
+  saveProgress(); if (document.exitPointerLock && locked) document.exitPointerLock();
+  stopFirewall(false); state.mode = 'menu';
+  ['pause','win','hud'].forEach(id => $(id).classList.add('hidden'));
   $('menu').classList.remove('hidden'); refreshMenu();
 }
-
 function finishGame(){
-  state.mode = 'won'; clearKeys();
-  if (document.exitPointerLock && locked) document.exitPointerLock();
+  state.mode = 'won'; clearKeys(); if (document.exitPointerLock && locked) document.exitPointerLock();
   const score = Math.floor(state.time) + state.mistakes * PENALTY;
   const entry = { name: state.name, time: Math.floor(state.time), mistakes: state.mistakes, score, date: new Date().toISOString().slice(0,10) };
-  const rank = addToBoard(entry);
-  store.del(SAVE_KEY);
+  const rank = addToBoard(entry); store.del(SAVE_KEY);
   $('wTime').textContent = fmt(state.time); $('wMist').textContent = state.mistakes;
   $('wScore').textContent = fmt(score); $('wRank').textContent = rank >= 0 ? '#' + (rank + 1) : '—';
-  renderBoard($('lbWin'), rank);
-  $('win').classList.remove('hidden');
+  renderBoard($('lbWin'), rank); $('win').classList.remove('hidden');
+  confetti();
+}
+function confetti(){
+  for (let i = 0; i < 70; i++) {
+    const d = document.createElement('div'); d.className = 'confetti';
+    d.style.left = Math.random() * 100 + 'vw'; d.style.background = Math.random() < 0.5 ? '#19e6f2' : '#ff2fb8';
+    d.style.animationDuration = 2.2 + Math.random() * 2.5 + 's'; d.style.animationDelay = Math.random() * 0.8 + 's';
+    const s = 6 + Math.random() * 8; d.style.width = d.style.height = s + 'px';
+    document.body.appendChild(d); setTimeout(() => d.remove(), 6000);
+  }
 }
 
+/* ---------- title screen bits ---------- */
+(function titleFx(){
+  const t = $('title'), word = 'HashDash';
+  let html = ''; [...word].forEach((c, i) => html += `<span class="ch" style="animation-delay:${i*0.06}s">${c}</span>`);
+  html += ` <span class="ch td glitch" style="animation-delay:${word.length*0.06+0.1}s">3D</span>`;
+  t.innerHTML = html;
+  const f = $('floaters'); const cols = ['#19e6f2', '#ff2fb8', '#19e6f2', '#7ff9ff'];
+  for (let i = 0; i < 14; i++) {
+    const s = 18 + Math.random() * 46, c = cols[i % cols.length];
+    const v = document.createElement('div'); v.className = 'vox';
+    v.style.cssText = `--s:${s}px;--c:${c};--d:${3 + Math.random()*4}s;--r:${8 + Math.random()*14}s;left:${Math.random()*96}%;top:${Math.random()*92}%;opacity:${0.35 + Math.random()*0.5}`;
+    const h = s / 2;
+    v.innerHTML = '<div class="spin">' + [`rotateY(0deg)`, `rotateY(90deg)`, `rotateY(180deg)`, `rotateY(-90deg)`, `rotateX(90deg)`, `rotateX(-90deg)`].map(r => `<div class="f" style="transform:${r} translateZ(${h}px)"></div>`).join('') + '</div>';
+    f.appendChild(v);
+  }
+  const lines = ['world_data["you"] = "escaped"', 'len(chambers)  # 5', 'vault.clear()  # {}', 'registry.get("key", "KeyError?")', '{[1, 2]: "nope"}  # TypeError'];
+  let li = 0, ci = 0, del = false;
+  (function type(){
+    const s = lines[li];
+    ci += del ? -1 : 1;
+    $('typeText').innerHTML = highlight(s.slice(0, ci));
+    let wait = del ? 28 : 55;
+    if (!del && ci >= s.length) { del = true; wait = 1700; }
+    else if (del && ci <= 0) { del = false; li = (li + 1) % lines.length; wait = 350; }
+    setTimeout(type, wait);
+  })();
+})();
+function closeSheets(){ $('sheetLb').classList.add('hidden'); $('sheetHelp').classList.add('hidden'); }
+document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeSheets));
+['sheetLb','sheetHelp'].forEach(id => $(id).addEventListener('click', e => { if (e.target.id === id) closeSheets(); }));
+$('btnLb').addEventListener('click', () => { renderBoard($('lbMenu')); $('sheetLb').classList.remove('hidden'); });
+$('btnHelp').addEventListener('click', () => $('sheetHelp').classList.remove('hidden'));
 $('btnNew').addEventListener('click', () => { store.del(SAVE_KEY); startGame(null); });
-$('btnContinue').addEventListener('click', () => { const s = store.get(SAVE_KEY, null); startGame(s); });
+$('btnContinue').addEventListener('click', () => startGame(store.get(SAVE_KEY, null)));
 $('btnResume').addEventListener('click', resumeFromPause);
 $('btnQuit').addEventListener('click', toTitle);
 $('btnRestart').addEventListener('click', () => { store.del(SAVE_KEY); startGame(null); });
 $('btnAgain').addEventListener('click', () => startGame(null));
 $('btnTitle').addEventListener('click', toTitle);
-document.addEventListener('visibilitychange', () => { if (document.hidden && state.mode === 'play') setMode('paused'); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && (state.mode === 'play' || state.mode === 'terminal')) { if (state.mode === 'terminal') closeTerminal(false); setMode('paused'); } });
 window.addEventListener('beforeunload', saveProgress);
 
 /* =========================================================
-   11. MAIN LOOP
+   10. MAIN LOOP
    ========================================================= */
-function onResize(){ camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
-window.addEventListener('resize', onResize);
-
-// menu backdrop camera
+window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
 buildWorld();
-camera.position.set(0, 2.1, 1.5);
-
 let last = performance.now(), hudTick = 0;
 function frame(now){
   requestAnimationFrame(frame);
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
   const T = now / 1000;
-
   if (state.mode === 'menu') {
-    camera.position.set(Math.sin(T * 0.2) * 0.8, 2.1, 1.5 - (T * 1.2 % 40));
-    camera.rotation.set(Math.sin(T * 0.3) * 0.05, Math.sin(T * 0.15) * 0.3, 0);
+    camera.position.set(Math.sin(T * 0.2) * 0.8, 2.1 + Math.sin(T * 0.5) * 0.3, 1.5 - (T * 1.4 % 70));
+    camera.rotation.set(Math.sin(T * 0.3) * 0.05, Math.sin(T * 0.15) * 0.3, Math.sin(T * 0.2) * 0.03);
   } else if (state.mode !== 'won') {
-    if (state.mode === 'play' || state.mode === 'terminal') state.time += dt;
-    updatePlayer(dt);
-    scan(); updateProbe();
+    if (state.mode === 'play' || state.mode === 'terminal') { state.time += dt; updatePlayer(dt); }
+    if (state.mode !== 'paused') { scan(); updateProbe(); updateFirewallUI(); }
     hudTick += dt; if (hudTick > 0.25) { hudTick = 0; $('stTime').textContent = `TIME: ${fmt(state.time)}`; }
     state.saveTimer += dt; if (state.saveTimer > 4) { state.saveTimer = 0; saveProgress(); }
   }
   stepAnims(dt);
   if (cmdHold > 0) cmdHold -= dt;
   if (toastTimer > 0) { toastTimer -= dt; if (toastTimer <= 0) $('toast').className = ''; }
-
-  // pulses
   const pulse = 0.75 + 0.25 * Math.sin(T * 4);
-  ['KeyWall', 'RegistryNode', 'TraversalNode', 'FlushNode'].forEach((t, i) => {
-    if (i !== state.level) return;
-    if (i === 0) { MAT.gate.emissiveIntensity = 0.7 + 0.3 * pulse; MAT.gateLock.emissiveIntensity = 0.8 + 0.2 * pulse; }
-    else keysOf(t).forEach(k => { if (meshes[k] && meshes[k].material !== MAT.nodeDone) meshes[k].material.emissiveIntensity = 0.55 + 0.45 * pulse; });
-  });
+  if (state.level === 0) { MAT.gate.emissiveIntensity = 0.7 + 0.3 * pulse; MAT.gateLock.emissiveIntensity = 0.8 + 0.2 * pulse; }
+  else if (state.level < NUM_LEVELS) keysOf(NODE_TYPES[state.level]).forEach(k => { const m = meshes[k]; if (m && m.material !== MAT.nodeDone) m.material.emissiveIntensity = 0.55 + 0.45 * pulse; });
   MAT.pillarOn.emissiveIntensity = 0.85 + 0.15 * Math.sin(T * 6);
   MAT.garbage.emissiveIntensity = 0.6 + 0.4 * Math.abs(Math.sin(T * 13));
+  MAT.bridge.emissiveIntensity = 0.8 + 0.2 * Math.sin(T * 5);
+  if (firewall.visible) { fwTex.offset.y -= dt * 0.4; fwLight.intensity = 1.6 + Math.sin(T * 10) * 0.6; }
   if (portal) {
     portal.userData.disc.rotation.z -= dt * (portal.userData.active ? 2.2 : 0.3);
     portal.userData.ring.rotation.z += dt * 0.6;
     if (portal.userData.active) portal.userData.disc.scale.setScalar(1 + 0.04 * Math.sin(T * 5));
   }
   const dust = scene.getObjectByName('dust'); if (dust) dust.rotation.y = Math.sin(T * 0.05) * 0.05;
-
   renderer.render(scene, camera);
 }
-
-// init
 $('playerName').value = store.get(NAME_KEY, '') || '';
 refreshMenu();
 requestAnimationFrame(frame);

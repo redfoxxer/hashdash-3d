@@ -4,17 +4,22 @@ A first-person voxel puzzle game that teaches **CBSE Class XI Computer Science (
 Every block in the world is an entry in a Python dictionary, `world_data["x,y,z"] = "BlockType"`. Scan the magenta nodes, solve each diagnostic, and reshape the dictionary to escape.
 
 ## Chambers
-1. **The Key Validation Wall**: keys must be immutable (`{[1, 2]: ...}` raises `TypeError`)
-2. **The Missing Registry Alert**: a missing key raises `KeyError`
-3. **The Traversal Network**: `len()` counts distinct key-value pairs
-4. **The System Flush Portal**: `.clear()` empties the dictionary and leaves `{}`
+Each chamber picks one of 3 CBSE-style questions at random.
+1. **The Key Validation Wall**: immutable keys, `dict()` construction (a hurdle teaches the jump)
+2. **The Missing Registry Alert**: `KeyError`, `get()` with a default, `in` checks keys only. Solving it builds a zig-zag jumping bridge.
+3. **The Mutation Engine**: assigning to keys, `update()`, `setdefault()`
+4. **The Traversal Network**: `len()`, looping over keys, `max()` / `sorted()` on dictionaries
+5. **The System Flush Portal**: `clear()`, `pop()`, `copy()` vs a second name for the same object
+
+**Firewall:** once a diagnostic opens, a firewall closes in from behind. If it reaches you, you get shoved into the void or crushed, with a +15 s penalty and a respawn at the checkpoint.
 
 ## Controls
 | Action | Keys |
 | --- | --- |
 | Move | W A S D / arrow keys (Shift to sprint) |
+| Jump | Space |
 | Look | Mouse (click to lock the pointer) or drag |
-| Scan | Click / E / SCAN button |
+| Scan | E / click / SCAN button |
 | Answer | 1 to 4, Enter to resume |
 | Pause | Esc / P |
 
